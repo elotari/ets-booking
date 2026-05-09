@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"c:\\\\Users\\\\moham\\\\OneDrive\\\\Desktop\\\\ETS BOOKING SYSTEM\\\\public\" \"c:\\\\Users\\\\moham\\\\OneDrive\\\\Desktop\\\\ETS BOOKING SYSTEM\\\\server\\\\routes\" \"c:\\\\Users\\\\moham\\\\OneDrive\\\\Desktop\\\\ETS BOOKING SYSTEM\\\\data\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"const db = require\\('./server/db'\\); console.log\\('DB OK:', typeof db\\); db.exec\\(\\\\\"INSERT INTO bookings \\(room,date,start_time,end_time,name,department,subject,services,created_at,ref\\) VALUES \\('a','2026-05-11','09:00','10:00','محمد العمري','ETS','اجتماع تقني','[]','2026-05-09T10:00:00.000Z','MTG-2026-1234'\\)\\\\\"\\); const rows = db.prepare\\('SELECT * FROM bookings'\\).all\\(\\); console.log\\('Rows:', rows.length, rows[0].ref\\); \")",
+      "Bash(node server/index.js)",
+      "Bash(curl -s http://localhost:3000/api/bookings/all)",
+      "Bash(curl -s -X POST http://localhost:3000/api/bookings -H \"Content-Type: application/json\" -d \"{\\\\\"room\\\\\":\\\\\"b\\\\\",\\\\\"date\\\\\":\\\\\"2026-05-12\\\\\",\\\\\"start_time\\\\\":\\\\\"10:00\\\\\",\\\\\"end_time\\\\\":\\\\\"11:30\\\\\",\\\\\"name\\\\\":\\\\\"سارة أحمد\\\\\",\\\\\"department\\\\\":\\\\\"EO\\\\\",\\\\\"subject\\\\\":\\\\\"مراجعة المشروع\\\\\",\\\\\"services\\\\\":[\\\\\"drinks\\\\\"],\\\\\"notes\\\\\":\\\\\"\\\\\"}\")",
+      "Bash(curl -s \"http://localhost:3000/api/bookings?room=b&date=2026-05-12\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/bookings -H \"Content-Type: application/json\" -d \"{\\\\\"room\\\\\":\\\\\"b\\\\\",\\\\\"date\\\\\":\\\\\"2026-05-12\\\\\",\\\\\"start_time\\\\\":\\\\\"10:30\\\\\",\\\\\"end_time\\\\\":\\\\\"11:00\\\\\",\\\\\"name\\\\\":\\\\\"خالد\\\\\",\\\\\"department\\\\\":\\\\\"EM\\\\\",\\\\\"subject\\\\\":\\\\\"تعارض\\\\\",\\\\\"services\\\\\":[]}\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/bookings -H \"Content-Type: application/json\" -d \"{\\\\\"room\\\\\":\\\\\"a\\\\\",\\\\\"date\\\\\":\\\\\"2026-05-10\\\\\",\\\\\"start_time\\\\\":\\\\\"09:00\\\\\",\\\\\"end_time\\\\\":\\\\\"10:00\\\\\",\\\\\"name\\\\\":\\\\\"Test\\\\\",\\\\\"department\\\\\":\\\\\"ETS\\\\\",\\\\\"subject\\\\\":\\\\\"Weekend Test\\\\\",\\\\\"services\\\\\":[]}\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/bookings -H \"Content-Type: application/json\" -d \"{\\\\\"room\\\\\":\\\\\"c\\\\\",\\\\\"date\\\\\":\\\\\"2026-05-11\\\\\",\\\\\"start_time\\\\\":\\\\\"09:00\\\\\",\\\\\"end_time\\\\\":\\\\\"12:00\\\\\",\\\\\"name\\\\\":\\\\\"Test\\\\\",\\\\\"department\\\\\":\\\\\"ETS\\\\\",\\\\\"subject\\\\\":\\\\\"Too long\\\\\",\\\\\"services\\\\\":[]}\")",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(Get-Process node *)",
+      "Bash(Stop-Process -Force)",
+      "Bash(Write-Host \"Server stopped\")",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "Bash(node -e \"require\\('./server/db'\\); console.log\\('Fresh DB initialized OK'\\)\")",
+      "Bash(curl -s http://localhost:3000/)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\moham\\OneDrive\\Desktop\\ETS BOOKING SYSTEM"
+    ]
+  }
+}
