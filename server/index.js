@@ -1,7 +1,8 @@
 const express = require('express');
 const path    = require('path');
 const { addClient, removeClient } = require('./events');
-const bookingsRouter = require('./routes/bookings');
+const bookingsRouter       = require('./routes/bookings');
+const cancelRequestsRouter = require('./routes/cancelRequests');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -9,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.use('/api/bookings', bookingsRouter);
+app.use('/api/bookings',        bookingsRouter);
+app.use('/api/cancel-requests', cancelRequestsRouter);
 
 // SSE — real-time push to all open secretary dashboards
 app.get('/api/events', (req, res) => {

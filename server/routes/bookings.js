@@ -97,9 +97,12 @@ router.post('/', (req, res) => {
     return res.status(400).json({ success: false, error: 'Maximum booking duration is 2 hours' });
   }
 
-  // Department
-  if (!['ETS', 'EO', 'EM', 'EOM&M'].includes(department)) {
-    return res.status(400).json({ success: false, error: 'Invalid department' });
+  // Department — accept any non-empty string, max 100 chars
+  if (typeof department !== 'string' || !department.trim()) {
+    return res.status(400).json({ success: false, error: 'Department is required' });
+  }
+  if (department.trim().length > 100) {
+    return res.status(400).json({ success: false, error: 'Department name too long' });
   }
 
   // Overlap check

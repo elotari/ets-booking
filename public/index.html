@@ -39,345 +39,401 @@
 <body>
 <div class="page-wrapper">
 
-  <!-- Step Bar -->
-  <div class="step-bar" id="stepBar">
-    <div class="step-item active" data-step="1">
-      <div class="step-circle">١</div>
-      <div class="step-label">الغرفة والوقت</div>
-    </div>
-    <div class="step-item" data-step="2">
-      <div class="step-circle">٢</div>
-      <div class="step-label">الخدمات</div>
-    </div>
-    <div class="step-item" data-step="3">
-      <div class="step-circle">٣</div>
-      <div class="step-label">بياناتك</div>
-    </div>
-    <div class="step-item" data-step="4">
-      <div class="step-circle">٤</div>
-      <div class="step-label">المراجعة</div>
-    </div>
+  <!-- Mode Toggle Tabs -->
+  <div class="mode-tabs">
+    <button id="tabBook" class="mode-tab active" onclick="switchMode('book')">📅 حجز جديد</button>
+    <button id="tabCancel" class="mode-tab" onclick="switchMode('cancel')">🗑️ إلغاء حجز</button>
   </div>
 
-  <!-- ═══ PANEL 1: Room + Date + Time ═══ -->
-  <div id="panel-1" class="panel active">
-    <div class="card">
-      <div class="card-header">
-        <h2>حجز قاعة الاجتماعات</h2>
-        <p>اختر الغرفة والتاريخ والوقت المناسب</p>
+  <!-- ═══ BOOK SECTION ═══ -->
+  <div id="bookSection">
+
+    <!-- Step Bar -->
+    <div class="step-bar" id="stepBar">
+      <div class="step-item active" data-step="1">
+        <div class="step-circle">١</div>
+        <div class="step-label">الغرفة والوقت</div>
       </div>
-
-      <!-- Alert banner (conflict) -->
-      <div id="conflictAlert" class="alert alert-danger" style="display:none;margin:16px 24px 0;">
-        <span>⚠️</span>
-        <span>هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر</span>
+      <div class="step-item" data-step="2">
+        <div class="step-circle">٢</div>
+        <div class="step-label">الخدمات</div>
       </div>
-
-      <!-- Section 1: Room -->
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">١</span>
-          اختر القاعة
-        </div>
-        <div class="rooms-grid">
-
-          <!-- Room A -->
-          <div class="room-card" id="room-a" onclick="selectRoom('a')">
-            <span class="tick-badge">✓</span>
-            <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-              <circle cx="100" cy="83" r="44" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-              <!-- N chair -->
-              <rect x="84" y="14" width="32" height="15" rx="5" fill="#1d5fa8"/>
-              <!-- S chair -->
-              <rect x="84" y="131" width="32" height="15" rx="5" fill="#1d5fa8"/>
-              <!-- W chair -->
-              <rect x="12" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
-              <!-- E chair -->
-              <rect x="173" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
-              <!-- NW -->
-              <rect x="34" y="28" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 45 35)"/>
-              <!-- NE -->
-              <rect x="140" y="22" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 151 29)"/>
-              <!-- SW -->
-              <rect x="28" y="118" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 39 125)"/>
-              <!-- SE -->
-              <rect x="148" y="116" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 159 123)"/>
-            </svg>
-            <div class="room-name">غرفة A — الطابق الأول</div>
-            <span class="room-capacity">٨ أشخاص</span>
-            <div class="room-desc">طابق أول بجانب قسم ETS. شاشة ذكية، اتصال فيديو، طاولة مستديرة.</div>
-          </div>
-
-          <!-- Room B -->
-          <div class="room-card" id="room-b" onclick="selectRoom('b')">
-            <span class="tick-badge">✓</span>
-            <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-              <!-- Large table -->
-              <rect x="40" y="50" width="120" height="60" rx="6" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-              <!-- Top chairs -->
-              <rect x="48" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="74" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="100" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="126" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <!-- Bottom chairs -->
-              <rect x="48" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="74" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="100" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <rect x="126" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-              <!-- Left chairs -->
-              <rect x="16" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
-              <rect x="16" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
-              <!-- Right chairs -->
-              <rect x="165" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
-              <rect x="165" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
-            </svg>
-            <div class="room-name">غرفة B — الطابق الثاني</div>
-            <span class="room-capacity">١٦ شخص</span>
-            <div class="room-desc">غرفة رئيسية، طابق ثانٍ. بروجكتور، HDMI. للعروض الكبيرة.</div>
-          </div>
-
-          <!-- Room C -->
-          <div class="room-card" id="room-c" onclick="selectRoom('c')">
-            <span class="tick-badge">✓</span>
-            <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-              <!-- Window suggestion -->
-              <rect x="150" y="10" width="38" height="8" rx="3" fill="#a0c8f0" opacity="0.6"/>
-              <!-- Small round table -->
-              <circle cx="100" cy="83" r="34" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-              <!-- 6 chairs -->
-              <!-- N -->
-              <rect x="86" y="22" width="28" height="14" rx="5" fill="#1d5fa8"/>
-              <!-- S -->
-              <rect x="86" y="124" width="28" height="14" rx="5" fill="#1d5fa8"/>
-              <!-- NW -->
-              <rect x="26" y="42" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 36 49)"/>
-              <!-- NE -->
-              <rect x="150" y="38" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 160 45)"/>
-              <!-- SW -->
-              <rect x="30" y="108" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 40 115)"/>
-              <!-- SE -->
-              <rect x="148" y="106" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 158 113)"/>
-            </svg>
-            <div class="room-name">غرفة C — الطابق الثالث</div>
-            <span class="room-capacity">٦ أشخاص</span>
-            <div class="room-desc">هادئة، طابق ثالث. طاولة مستديرة. للنقاشات الخاصة مع إطلالة.</div>
-          </div>
-
-        </div>
+      <div class="step-item" data-step="3">
+        <div class="step-circle">٣</div>
+        <div class="step-label">بياناتك</div>
       </div>
-
-      <!-- Section 2: Calendar -->
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">٢</span>
-          اختر التاريخ
-        </div>
-
-        <div id="calendarHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;display:none;">
-          اختر القاعة أولاً لعرض التقويم
-        </div>
-
-        <div id="calendarWrap">
-          <div class="calendar-nav">
-            <button class="cal-nav-btn" onclick="prevMonth()">&#8250;</button>
-            <div class="month-label" id="monthLabel"></div>
-            <button class="cal-nav-btn" onclick="nextMonth()">&#8249;</button>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
-        </div>
+      <div class="step-item" data-step="4">
+        <div class="step-circle">٤</div>
+        <div class="step-label">المراجعة</div>
       </div>
+    </div>
 
-      <!-- Section 3: Time -->
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">٣</span>
-          اختر الوقت
+    <!-- ═══ PANEL 1: Room + Date + Time ═══ -->
+    <div id="panel-1" class="panel active">
+      <div class="card">
+        <div class="card-header">
+          <h2>حجز قاعة الاجتماعات</h2>
+          <p>اختر الغرفة والتاريخ والوقت المناسب</p>
         </div>
 
-        <div id="timeHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">
-          اختر التاريخ أولاً لعرض الأوقات المتاحة
+        <!-- Alert banner (conflict) -->
+        <div id="conflictAlert" class="alert alert-danger" style="display:none;margin:16px 24px 0;">
+          <span>⚠️</span>
+          <span>هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر</span>
         </div>
 
-        <div id="timePicker" class="time-picker-outer">
-          <div class="time-picker-container">
-            <!-- Start time -->
-            <div>
-              <div class="time-col-label">⏱ وقت البداية</div>
-              <div class="time-list" id="startList"></div>
+        <!-- Section 1: Room -->
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">١</span>
+            اختر القاعة
+          </div>
+          <div class="rooms-grid">
+
+            <!-- Room A -->
+            <div class="room-card" id="room-a" onclick="selectRoom('a')">
+              <span class="tick-badge">✓</span>
+              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
+                <circle cx="100" cy="83" r="44" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
+                <rect x="84" y="14" width="32" height="15" rx="5" fill="#1d5fa8"/>
+                <rect x="84" y="131" width="32" height="15" rx="5" fill="#1d5fa8"/>
+                <rect x="12" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
+                <rect x="173" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
+                <rect x="34" y="28" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 45 35)"/>
+                <rect x="140" y="22" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 151 29)"/>
+                <rect x="28" y="118" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 39 125)"/>
+                <rect x="148" y="116" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 159 123)"/>
+              </svg>
+              <div class="room-name">غرفة A — الطابق الأول</div>
+              <span class="room-capacity">٨ أشخاص</span>
+              <div class="room-desc">طابق أول بجانب قسم ETS. شاشة ذكية، اتصال فيديو، طاولة مستديرة.</div>
             </div>
-            <!-- End time -->
-            <div>
-              <div class="time-col-label">⏰ وقت النهاية</div>
-              <div class="time-list" id="endList">
-                <div style="font-size:0.8rem;color:var(--muted);padding:12px;text-align:center;">
-                  اختر وقت البداية أولاً
+
+            <!-- Room B -->
+            <div class="room-card" id="room-b" onclick="selectRoom('b')">
+              <span class="tick-badge">✓</span>
+              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
+                <rect x="40" y="50" width="120" height="60" rx="6" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
+                <rect x="48" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="74" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="100" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="126" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="48" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="74" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="100" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="126" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
+                <rect x="16" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
+                <rect x="16" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
+                <rect x="165" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
+                <rect x="165" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
+              </svg>
+              <div class="room-name">غرفة B — الطابق الثاني</div>
+              <span class="room-capacity">١٦ شخص</span>
+              <div class="room-desc">غرفة رئيسية، طابق ثانٍ. بروجكتور، HDMI. للعروض الكبيرة.</div>
+            </div>
+
+            <!-- Room C -->
+            <div class="room-card" id="room-c" onclick="selectRoom('c')">
+              <span class="tick-badge">✓</span>
+              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
+                <rect x="150" y="10" width="38" height="8" rx="3" fill="#a0c8f0" opacity="0.6"/>
+                <circle cx="100" cy="83" r="34" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
+                <rect x="86" y="22" width="28" height="14" rx="5" fill="#1d5fa8"/>
+                <rect x="86" y="124" width="28" height="14" rx="5" fill="#1d5fa8"/>
+                <rect x="26" y="42" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 36 49)"/>
+                <rect x="150" y="38" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 160 45)"/>
+                <rect x="30" y="108" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 40 115)"/>
+                <rect x="148" y="106" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 158 113)"/>
+              </svg>
+              <div class="room-name">غرفة C — الطابق الثالث</div>
+              <span class="room-capacity">٦ أشخاص</span>
+              <div class="room-desc">هادئة، طابق ثالث. طاولة مستديرة. للنقاشات الخاصة مع إطلالة.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 2: Calendar -->
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">٢</span>
+            اختر التاريخ
+          </div>
+
+          <div id="calendarHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;display:none;">
+            اختر القاعة أولاً لعرض التقويم
+          </div>
+
+          <div id="calendarWrap">
+            <div class="calendar-nav">
+              <button class="cal-nav-btn" onclick="prevMonth()">&#8250;</button>
+              <div class="month-label" id="monthLabel"></div>
+              <button class="cal-nav-btn" onclick="nextMonth()">&#8249;</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>
+        </div>
+
+        <!-- Section 3: Time -->
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">٣</span>
+            اختر الوقت
+          </div>
+
+          <div id="timeHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">
+            اختر التاريخ أولاً لعرض الأوقات المتاحة
+          </div>
+
+          <div id="timePicker" class="time-picker-outer">
+            <div class="time-picker-container">
+              <div>
+                <div class="time-col-label">⏱ وقت البداية</div>
+                <div class="time-list" id="startList"></div>
+              </div>
+              <div>
+                <div class="time-col-label">⏰ وقت النهاية</div>
+                <div class="time-list" id="endList">
+                  <div style="font-size:0.8rem;color:var(--muted);padding:12px;text-align:center;">
+                    اختر وقت البداية أولاً
+                  </div>
                 </div>
               </div>
             </div>
+            <div id="durationBar" class="duration-bar" style="display:none;"></div>
           </div>
-          <div id="durationBar" class="duration-bar" style="display:none;"></div>
         </div>
-      </div>
 
-      <div class="btn-strip">
-        <button class="btn-primary" onclick="goStep2()">التالي ←</button>
+        <div class="btn-strip">
+          <button class="btn-primary" onclick="goStep2()">التالي ←</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══ PANEL 2: Services ═══ -->
-  <div id="panel-2" class="panel">
-    <div class="card">
-      <div class="card-header">
-        <h2>الخدمات الإضافية</h2>
-        <p>اختر الخدمات التي تحتاجها للاجتماع (اختياري)</p>
-      </div>
-
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">١</span>
-          الخدمات المتاحة
+    <!-- ═══ PANEL 2: Services ═══ -->
+    <div id="panel-2" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>الخدمات الإضافية</h2>
+          <p>اختر الخدمات التي تحتاجها للاجتماع (اختياري)</p>
         </div>
-        <div class="services-grid">
-          <div class="service-card" id="svc-drinks" onclick="toggleService('drinks', this)">
-            <span class="service-check">✓</span>
-            <div class="service-icon">☕</div>
-            <div class="service-name">مشروبات</div>
+
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">١</span>
+            الخدمات المتاحة
           </div>
-          <div class="service-card" id="svc-catering" onclick="toggleService('catering', this)">
-            <span class="service-check">✓</span>
-            <div class="service-icon">🍽️</div>
-            <div class="service-name">كيترينج</div>
-          </div>
-          <div class="service-card" id="svc-projector" onclick="toggleService('projector', this)">
-            <span class="service-check">✓</span>
-            <div class="service-icon">📽️</div>
-            <div class="service-name">جهاز عرض</div>
-          </div>
-          <div class="service-card" id="svc-video" onclick="toggleService('video', this)">
-            <span class="service-check">✓</span>
-            <div class="service-icon">💻</div>
-            <div class="service-name">Video Conference</div>
+          <div class="services-grid">
+            <div class="service-card" id="svc-drinks" onclick="toggleService('drinks', this)">
+              <span class="service-check">✓</span>
+              <div class="service-icon">☕</div>
+              <div class="service-name">مشروبات</div>
+            </div>
+            <div class="service-card" id="svc-catering" onclick="toggleService('catering', this)">
+              <span class="service-check">✓</span>
+              <div class="service-icon">🍽️</div>
+              <div class="service-name">كيترينج</div>
+            </div>
+            <div class="service-card" id="svc-projector" onclick="toggleService('projector', this)">
+              <span class="service-check">✓</span>
+              <div class="service-icon">📽️</div>
+              <div class="service-name">جهاز عرض</div>
+            </div>
+            <div class="service-card" id="svc-video" onclick="toggleService('video', this)">
+              <span class="service-check">✓</span>
+              <div class="service-icon">💻</div>
+              <div class="service-name">Video Conference</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="btn-strip">
-        <button class="btn-primary" onclick="goStep3()">التالي ←</button>
-        <button class="btn-ghost" onclick="showStep(1)">→ السابق</button>
+        <div class="btn-strip">
+          <button class="btn-primary" onclick="goStep3()">التالي ←</button>
+          <button class="btn-ghost" onclick="showStep(1)">→ السابق</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══ PANEL 3: Employee Details ═══ -->
-  <div id="panel-3" class="panel">
-    <div class="card">
-      <div class="card-header">
-        <h2>بياناتك</h2>
-        <p>أدخل بياناتك للإكمال الحجز</p>
-      </div>
-
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">١</span>
-          المعلومات الشخصية
+    <!-- ═══ PANEL 3: Employee Details ═══ -->
+    <div id="panel-3" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>بياناتك</h2>
+          <p>أدخل بياناتك للإكمال الحجز</p>
         </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label"><span class="req">*</span> الاسم الكامل</label>
-            <input class="form-input" id="fName" type="text" placeholder="أدخل اسمك الكامل" />
+
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">١</span>
+            المعلومات الشخصية
           </div>
-          <div class="form-group">
-            <label class="form-label"><span class="req">*</span> القسم</label>
-            <select class="form-select" id="fDept">
-              <option value="">— اختر القسم —</option>
-              <option value="ETS">ETS</option>
-              <option value="EO">EO</option>
-              <option value="EM">EM</option>
-              <option value="EOM&M">EOM&amp;M</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label class="form-label"><span class="req">*</span> موضوع الاجتماع (Subject)</label>
-            <input class="form-input" id="fSubject" type="text" placeholder="أدخل موضوع الاجتماع" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">البريد الإلكتروني</label>
-            <input class="form-input" id="fEmail" type="email" placeholder="example@company.com" dir="ltr" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">رقم الهاتف</label>
-            <input class="form-input" id="fPhone" type="tel" placeholder="+966 5X XXX XXXX" dir="ltr" />
-          </div>
-          <div class="form-group full">
-            <label class="form-label">ملاحظات إضافية</label>
-            <textarea class="form-textarea" id="fNotes" placeholder="أي ملاحظات أو متطلبات خاصة..."></textarea>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><span class="req">*</span> الاسم الكامل</label>
+              <input class="form-input" id="fName" type="text" placeholder="أدخل اسمك الكامل" />
+            </div>
+            <div class="form-group">
+              <label class="form-label"><span class="req">*</span> القسم</label>
+              <select class="form-select" id="fDept" onchange="handleDeptChange()">
+                <option value="">— اختر القسم —</option>
+                <option value="ETS">ETS</option>
+                <option value="Manager EOG">Manager EOG</option>
+                <option value="__other__">أخرى...</option>
+              </select>
+              <input class="form-input" id="fDeptOther" type="text" placeholder="اكتب اسم القسم" style="display:none;margin-top:8px;" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label"><span class="req">*</span> موضوع الاجتماع (Subject)</label>
+              <input class="form-input" id="fSubject" type="text" placeholder="أدخل موضوع الاجتماع" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">البريد الإلكتروني</label>
+              <input class="form-input" id="fEmail" type="email" placeholder="example@company.com" dir="ltr" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">رقم الهاتف</label>
+              <input class="form-input" id="fPhone" type="tel" placeholder="+966 5X XXX XXXX" dir="ltr" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">ملاحظات إضافية</label>
+              <textarea class="form-textarea" id="fNotes" placeholder="أي ملاحظات أو متطلبات خاصة..."></textarea>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="btn-strip">
-        <button class="btn-primary" onclick="goStep4()">مراجعة الحجز ←</button>
-        <button class="btn-ghost" onclick="showStep(2)">→ السابق</button>
+        <div class="btn-strip">
+          <button class="btn-primary" onclick="goStep4()">مراجعة الحجز ←</button>
+          <button class="btn-ghost" onclick="showStep(2)">→ السابق</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══ PANEL 4: Review ═══ -->
-  <div id="panel-4" class="panel">
-    <div class="card">
-      <div class="card-header">
-        <h2>مراجعة الحجز</h2>
-        <p>تأكد من تفاصيل الحجز قبل الإرسال</p>
-      </div>
-
-      <div class="card-section">
-        <div class="section-title">
-          <span class="sec-num">١</span>
-          ملخص الحجز
+    <!-- ═══ PANEL 4: Review ═══ -->
+    <div id="panel-4" class="panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>مراجعة الحجز</h2>
+          <p>تأكد من تفاصيل الحجز قبل الإرسال</p>
         </div>
-        <table class="review-table" id="reviewTable"></table>
-      </div>
 
-      <div id="submitAlert" class="alert alert-danger" style="display:none;margin:0 24px 0;"></div>
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">١</span>
+            ملخص الحجز
+          </div>
+          <table class="review-table" id="reviewTable"></table>
+        </div>
 
-      <div class="btn-strip">
-        <button class="btn-primary" id="submitBtn" onclick="submitBooking()">تأكيد الحجز ✓</button>
-        <button class="btn-ghost" onclick="showStep(3)">→ تعديل</button>
+        <div id="submitAlert" class="alert alert-danger" style="display:none;margin:0 24px 0;"></div>
+
+        <div class="btn-strip">
+          <button class="btn-primary" id="submitBtn" onclick="submitBooking()">تأكيد الحجز ✓</button>
+          <button class="btn-ghost" onclick="showStep(3)">→ تعديل</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ═══ CONFIRMATION SCREEN ═══ -->
-  <div id="confirmation">
-    <div class="card">
-      <div class="card-header">
-        <h2>تم تأكيد الحجز</h2>
-        <p>سيتم الإرسال إلى قسم الخدمات</p>
-      </div>
-      <div class="confirm-screen">
-        <div class="confirm-icon">✅</div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">
-          تم الحجز بنجاح!
+    <!-- ═══ CONFIRMATION SCREEN ═══ -->
+    <div id="confirmation">
+      <div class="card">
+        <div class="card-header">
+          <h2>تم تأكيد الحجز</h2>
+          <p>سيتم الإرسال إلى قسم الخدمات</p>
         </div>
-        <div style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">
-          رقم مرجع الحجز الخاص بك
+        <div class="confirm-screen">
+          <div class="confirm-icon">✅</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">
+            تم الحجز بنجاح!
+          </div>
+          <div style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">
+            رقم مرجع الحجز الخاص بك
+          </div>
+          <div class="confirm-ref" id="confirmRef"></div>
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:28px;">
+            احتفظ بهذا الرقم للرجوع إليه لاحقاً
+          </div>
+          <div id="confirmSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
+          <button class="btn-primary" onclick="resetApp()" style="min-width:180px;">
+            ← حجز آخر
+          </button>
         </div>
-        <div class="confirm-ref" id="confirmRef"></div>
-        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:28px;">
-          احتفظ بهذا الرقم للرجوع إليه لاحقاً
-        </div>
-        <div id="confirmSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
-        <button class="btn-primary" onclick="resetApp()" style="min-width:180px;">
-          ← حجز آخر
-        </button>
       </div>
     </div>
-  </div>
 
+  </div><!-- End bookSection -->
+
+  <!-- ═══ CANCEL SECTION ═══ -->
+  <div id="cancelSection" style="display:none;">
+
+    <!-- Cancel calendar view -->
+    <div id="cancelMain">
+      <div class="card">
+        <div class="card-header">
+          <h2>إلغاء حجز</h2>
+          <p>اختر الاجتماع من التقويم لطلب إلغائه</p>
+        </div>
+        <div class="card-section">
+          <div class="section-title">
+            <span class="sec-num">١</span>
+            جميع الاجتماعات المحجوزة
+          </div>
+          <div class="calendar-nav">
+            <button class="cal-nav-btn" onclick="cancelPrevMonth()">&#8250;</button>
+            <div class="month-label" id="cancelMonthLabel"></div>
+            <button class="cal-nav-btn" onclick="cancelNextMonth()">&#8249;</button>
+          </div>
+          <div class="sec-cal-grid" id="cancelCalHeaders" style="border-top:none;"></div>
+          <div class="sec-cal-grid" id="cancelCalGrid"></div>
+          <div style="margin-top:12px;padding:10px 14px;background:var(--blue-tint2);border-radius:8px;font-size:0.8rem;color:var(--muted);text-align:center;border:1px solid var(--border-light);">
+            انقر على أي اجتماع محجوز في التقويم لعرض تفاصيله وطلب إلغائه
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancel success view -->
+    <div id="cancelSuccessView" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <h2>تم الإرسال</h2>
+          <p>طلب الإلغاء في انتظار مراجعة السكرتيرة</p>
+        </div>
+        <div class="confirm-screen">
+          <div class="confirm-icon">📨</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">
+            تم إرسال طلب الإلغاء بنجاح!
+          </div>
+          <div style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">
+            ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء
+          </div>
+          <div id="cancelSuccessSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
+          <button class="btn-primary" onclick="showCancelCalendar()" style="min-width:180px;">
+            ← طلب إلغاء آخر
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- End cancelSection -->
+
+</div><!-- End page-wrapper -->
+
+<!-- Cancel Request Modal -->
+<div class="cancel-modal-overlay" id="cancelModalOverlay" onclick="handleCancelOverlayClick(event)">
+  <div class="cancel-modal" onclick="event.stopPropagation()">
+    <div class="cancel-modal-head">
+      <h3>طلب إلغاء الحجز</h3>
+      <button class="drawer-close" onclick="closeCancelModal()">✕</button>
+    </div>
+    <div class="cancel-modal-body" id="cancelModalBody"></div>
+    <div class="cancel-modal-foot">
+      <button class="btn-danger" id="cancelSubmitBtn" onclick="submitCancelRequest()">إرسال طلب الإلغاء</button>
+      <button class="btn-ghost" onclick="closeCancelModal()">إغلاق</button>
+    </div>
+  </div>
 </div>
 
 <!-- Secretary link -->
@@ -386,7 +442,16 @@
 </div>
 
 <script>
-/* ─── State ─── */
+/* ─── Shared helpers ─── */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+/* ─── Booking State ─── */
 const state = {
   step: 1,
   room: null,
@@ -397,8 +462,8 @@ const state = {
   name: '', dept: '', subject: '', email: '', phone: '', notes: '',
   calYear: new Date().getFullYear(),
   calMonth: new Date().getMonth(),
-  bookingsForDate: [],  // [{start_time, end_time, ref}]
-  datesWithBookings: new Set(), // 'YYYY-MM-DD' strings for calendar dots
+  bookingsForDate: [],
+  datesWithBookings: new Set(),
 };
 
 /* ─── Arabic helpers ─── */
@@ -434,6 +499,7 @@ function overlap(s1, e1, s2, e2) {
 }
 
 function formatDateAr(dateStr) {
+  if (!dateStr) return '—';
   const [y,m,d] = dateStr.split('-');
   return `${toAr(parseInt(d))} ${AR_MONTHS[parseInt(m)-1]} ${toAr(y)}`;
 }
@@ -444,6 +510,27 @@ function roomLabel(r) {
 
 function serviceLabel(s) {
   return { drinks:'مشروبات', catering:'كيترينج', projector:'جهاز عرض', video:'Video Conference' }[s] || s;
+}
+
+/* ─── Mode Toggle ─── */
+function switchMode(mode) {
+  const bookSection   = document.getElementById('bookSection');
+  const cancelSection = document.getElementById('cancelSection');
+  const tabBook       = document.getElementById('tabBook');
+  const tabCancel     = document.getElementById('tabCancel');
+
+  if (mode === 'book') {
+    bookSection.style.display   = 'block';
+    cancelSection.style.display = 'none';
+    tabBook.classList.add('active');
+    tabCancel.classList.remove('active');
+  } else {
+    bookSection.style.display   = 'none';
+    cancelSection.style.display = 'block';
+    tabCancel.classList.add('active');
+    tabBook.classList.remove('active');
+    loadCancelCalendar();
+  }
 }
 
 /* ─── Step Navigation ─── */
@@ -478,7 +565,6 @@ function selectRoom(r) {
   document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('room-'+r).classList.add('selected');
 
-  // Fetch all bookings for this room to mark calendar dots
   loadRoomBookingDates(r);
 
   document.getElementById('calendarHint').style.display = 'none';
@@ -494,7 +580,7 @@ async function loadRoomBookingDates(room) {
     all.forEach(b => { if (b.room === room) dates.add(b.date); });
     state.datesWithBookings = dates;
     renderCalendar();
-  } catch(e) { /* silently ignore */ }
+  } catch(e) { /* ignore */ }
 }
 
 /* ─── Calendar ─── */
@@ -517,7 +603,6 @@ function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
   grid.innerHTML = '';
 
-  // Day headers — order: Sun=0 … Sat=6
   AR_DAYS.forEach(d => {
     const el = document.createElement('div');
     el.className = 'cal-day-header';
@@ -528,11 +613,9 @@ function renderCalendar() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  // First day of month, day-of-week offset (0=Sunday)
   const firstDay = new Date(state.calYear, state.calMonth, 1).getDay();
   const daysInMonth = new Date(state.calYear, state.calMonth+1, 0).getDate();
 
-  // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
     const el = document.createElement('div');
     el.className = 'cal-day empty';
@@ -542,10 +625,10 @@ function renderCalendar() {
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(state.calYear, state.calMonth, d);
     const dow  = date.getDay();
-    const isPast   = date < today;
+    const isPast    = date < today;
     const isWeekend = dow === 5 || dow === 6;
-    const dateStr = `${state.calYear}-${pad(state.calMonth+1)}-${pad(d)}`;
-    const isToday  = date.getTime() === today.getTime();
+    const dateStr   = `${state.calYear}-${pad(state.calMonth+1)}-${pad(d)}`;
+    const isToday   = date.getTime() === today.getTime();
     const isSelected = dateStr === state.date;
     const hasBookings = state.datesWithBookings.has(dateStr);
 
@@ -579,7 +662,6 @@ async function selectDate(dateStr) {
   state.endTime = null;
   renderCalendar();
 
-  // Fetch bookings for this room+date
   try {
     const res = await fetch(`/api/bookings?room=${state.room}&date=${dateStr}`);
     state.bookingsForDate = await res.json();
@@ -623,7 +705,6 @@ function wouldOverlap(startT, endT) {
 function renderStartList() {
   const list = document.getElementById('startList');
   list.innerHTML = '';
-  // Start slots: 07:00 to 14:30
   ALL_SLOTS.filter(t => timeToMin(t) <= 14*60+30).forEach(t => {
     const booked = isSlotBooked30(t);
     const el = document.createElement('div');
@@ -655,7 +736,6 @@ function renderEndList() {
   const startMin = timeToMin(state.startTime);
   const maxEnd   = Math.min(startMin + 120, 15*60);
 
-  // End slots from startMin+30 to maxEnd, in steps of 30
   for (let m = startMin + 30; m <= maxEnd; m += 30) {
     const t = minToTime(m);
     const durMins = m - startMin;
@@ -696,11 +776,19 @@ function toggleService(key, el) {
   }
 }
 
+/* ─── Department ─── */
+function handleDeptChange() {
+  const val = document.getElementById('fDept').value;
+  const otherInput = document.getElementById('fDeptOther');
+  otherInput.style.display = val === '__other__' ? 'block' : 'none';
+  if (val !== '__other__') otherInput.value = '';
+}
+
 /* ─── Step Guards ─── */
 function goStep2() {
   document.getElementById('conflictAlert').style.display = 'none';
-  if (!state.room) { alert('الرجاء اختيار القاعة أولاً'); return; }
-  if (!state.date) { alert('الرجاء اختيار التاريخ'); return; }
+  if (!state.room)      { alert('الرجاء اختيار القاعة أولاً'); return; }
+  if (!state.date)      { alert('الرجاء اختيار التاريخ'); return; }
   if (!state.startTime) { alert('الرجاء اختيار وقت البداية'); return; }
   if (!state.endTime)   { alert('الرجاء اختيار وقت النهاية'); return; }
   showStep(2);
@@ -712,14 +800,21 @@ function goStep3() {
 
 function goStep4() {
   const name    = document.getElementById('fName').value.trim();
-  const dept    = document.getElementById('fDept').value;
+  const deptSel = document.getElementById('fDept').value;
   const subject = document.getElementById('fSubject').value.trim();
   const email   = document.getElementById('fEmail').value.trim();
   const phone   = document.getElementById('fPhone').value.trim();
   const notes   = document.getElementById('fNotes').value.trim();
 
-  if (!name)    { alert('الرجاء إدخال الاسم الكامل'); return; }
-  if (!dept)    { alert('الرجاء اختيار القسم'); return; }
+  if (!name) { alert('الرجاء إدخال الاسم الكامل'); return; }
+  if (!deptSel) { alert('الرجاء اختيار القسم'); return; }
+
+  let dept = deptSel;
+  if (deptSel === '__other__') {
+    dept = document.getElementById('fDeptOther').value.trim();
+    if (!dept) { alert('الرجاء إدخال اسم القسم'); return; }
+  }
+
   if (!subject) { alert('الرجاء إدخال موضوع الاجتماع'); return; }
 
   state.name    = name;
@@ -751,7 +846,7 @@ function buildReviewTable() {
   ];
   const tbl = document.getElementById('reviewTable');
   tbl.innerHTML = rows.map(([k,v]) =>
-    `<tr><td>${k}</td><td>${v}</td></tr>`
+    `<tr><td>${k}</td><td>${escHtml(v)}</td></tr>`
   ).join('');
 }
 
@@ -783,10 +878,8 @@ async function submitBooking() {
     if (res.ok && data.success) {
       showConfirmation(data.ref);
     } else if (res.status === 409) {
-      // Conflict — go back to step 1 and show alert
       showStep(1);
       document.getElementById('conflictAlert').style.display = 'flex';
-      // Refresh bookings for the date
       if (state.room && state.date) await selectDate(state.date);
       state.startTime = null;
       state.endTime   = null;
@@ -819,7 +912,7 @@ function showConfirmation(ref) {
       <span style="color:var(--muted);font-weight:600;">القاعة</span>    <span style="font-weight:700;">${roomLabel(state.room)}</span>
       <span style="color:var(--muted);font-weight:600;">التاريخ</span>   <span style="font-weight:700;">${formatDateAr(state.date)}</span>
       <span style="color:var(--muted);font-weight:600;">الوقت</span>     <span style="font-weight:700;">${state.startTime} — ${state.endTime}</span>
-      <span style="color:var(--muted);font-weight:600;">الاسم</span>     <span style="font-weight:700;">${state.name}</span>
+      <span style="color:var(--muted);font-weight:600;">الاسم</span>     <span style="font-weight:700;">${escHtml(state.name)}</span>
       <span style="color:var(--muted);font-weight:600;">الخدمات</span>   <span style="font-weight:700;">${svcLabels}</span>
     </div>
   `;
@@ -844,6 +937,8 @@ function resetApp() {
   document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('fName').value = '';
   document.getElementById('fDept').value = '';
+  document.getElementById('fDeptOther').value = '';
+  document.getElementById('fDeptOther').style.display = 'none';
   document.getElementById('fSubject').value = '';
   document.getElementById('fEmail').value = '';
   document.getElementById('fPhone').value = '';
@@ -854,6 +949,220 @@ function resetApp() {
   resetTimePicker();
   renderCalendar();
   showStep(1);
+}
+
+/* ─── Cancel Section ─── */
+let cancelCalYear  = new Date().getFullYear();
+let cancelCalMonth = new Date().getMonth();
+let allBookingsForCancel = [];
+let selectedCancelBooking = null;
+
+async function loadCancelCalendar() {
+  try {
+    const res = await fetch('/api/bookings/all');
+    allBookingsForCancel = await res.json();
+    renderCancelCalendar();
+  } catch(e) { /* ignore */ }
+}
+
+function cancelPrevMonth() {
+  cancelCalMonth--;
+  if (cancelCalMonth < 0) { cancelCalMonth = 11; cancelCalYear--; }
+  renderCancelCalendar();
+}
+
+function cancelNextMonth() {
+  cancelCalMonth++;
+  if (cancelCalMonth > 11) { cancelCalMonth = 0; cancelCalYear++; }
+  renderCancelCalendar();
+}
+
+function renderCancelCalendar() {
+  document.getElementById('cancelMonthLabel').textContent =
+    AR_MONTHS[cancelCalMonth] + ' ' + toAr(cancelCalYear);
+
+  // Day headers
+  const headersEl = document.getElementById('cancelCalHeaders');
+  headersEl.innerHTML = '';
+  AR_DAYS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'sec-cal-day-header';
+    el.textContent = d;
+    headersEl.appendChild(el);
+  });
+
+  const grid = document.getElementById('cancelCalGrid');
+  grid.innerHTML = '';
+
+  const todayStr = `${new Date().getFullYear()}-${pad(new Date().getMonth()+1)}-${pad(new Date().getDate())}`;
+  const firstDow = new Date(cancelCalYear, cancelCalMonth, 1).getDay();
+  const daysInMonth = new Date(cancelCalYear, cancelCalMonth+1, 0).getDate();
+
+  const monthPrefix = `${cancelCalYear}-${pad(cancelCalMonth+1)}`;
+  const byDate = {};
+  allBookingsForCancel.forEach(b => {
+    if (b.date && b.date.startsWith(monthPrefix)) {
+      if (!byDate[b.date]) byDate[b.date] = [];
+      byDate[b.date].push(b);
+    }
+  });
+
+  for (let i = 0; i < firstDow; i++) {
+    const el = document.createElement('div');
+    el.className = 'sec-cal-cell';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(cancelCalYear, cancelCalMonth, d);
+    const dow  = date.getDay();
+    const dateStr   = `${cancelCalYear}-${pad(cancelCalMonth+1)}-${pad(d)}`;
+    const isToday   = dateStr === todayStr;
+    const isWeekend = dow === 5 || dow === 6;
+
+    const cell = document.createElement('div');
+    cell.className = 'sec-cal-cell' + (isWeekend ? ' disabled-day' : '') + (isToday ? ' today' : '');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'sec-cal-num';
+    numEl.textContent = toAr(d);
+    cell.appendChild(numEl);
+
+    const dayBookings = byDate[dateStr] || [];
+    dayBookings.forEach(b => {
+      const r = (b.room || '').toLowerCase();
+      const chip = document.createElement('div');
+      chip.className = `booking-chip chip-${r}`;
+      chip.title = `${b.name} · ${b.start_time}–${b.end_time}`;
+      chip.innerHTML = `<span class="chip-room">${(r||'?').toUpperCase()}</span>${escHtml(b.name||'')} ${b.start_time}`;
+      chip.addEventListener('click', () => openCancelModal(b));
+      cell.appendChild(chip);
+    });
+
+    grid.appendChild(cell);
+  }
+}
+
+function openCancelModal(booking) {
+  selectedCancelBooking = booking;
+  const r = (booking.room || '').toLowerCase();
+
+  document.getElementById('cancelModalBody').innerHTML = `
+    <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
+        <div class="detail-key">رقم المرجع</div>
+        <div class="detail-val" style="direction:ltr;">${escHtml(booking.ref||'')}</div>
+      </div>
+      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
+        <div class="detail-key">القاعة</div>
+        <div class="detail-val">${roomLabel(r)}</div>
+      </div>
+      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
+        <div class="detail-key">الاسم</div>
+        <div class="detail-val">${escHtml(booking.name||'')}</div>
+      </div>
+      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
+        <div class="detail-key">التاريخ</div>
+        <div class="detail-val">${formatDateAr(booking.date)}</div>
+      </div>
+      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
+        <div class="detail-key">الوقت</div>
+        <div class="detail-val" style="direction:ltr;">${booking.start_time} – ${booking.end_time}</div>
+      </div>
+      <div class="detail-row" style="padding:6px 0;">
+        <div class="detail-key">الموضوع</div>
+        <div class="detail-val">${escHtml(booking.subject||'—')}</div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">اسمك (اختياري)</label>
+      <input class="form-input" id="cancelRequesterName" type="text" placeholder="من يطلب الإلغاء؟" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">سبب الإلغاء (اختياري)</label>
+      <textarea class="form-textarea" id="cancelReason" placeholder="اذكر سبب طلب الإلغاء إن أردت..." style="min-height:70px;"></textarea>
+    </div>
+    <div id="cancelModalAlert" style="display:none;margin-top:12px;"></div>
+  `;
+
+  document.getElementById('cancelSubmitBtn').disabled = false;
+  document.getElementById('cancelSubmitBtn').textContent = 'إرسال طلب الإلغاء';
+  document.getElementById('cancelModalOverlay').classList.add('open');
+}
+
+function closeCancelModal() {
+  document.getElementById('cancelModalOverlay').classList.remove('open');
+  selectedCancelBooking = null;
+}
+
+function handleCancelOverlayClick(e) {
+  if (e.target === document.getElementById('cancelModalOverlay')) closeCancelModal();
+}
+
+async function submitCancelRequest() {
+  if (!selectedCancelBooking) return;
+
+  const btn       = document.getElementById('cancelSubmitBtn');
+  const alertEl   = document.getElementById('cancelModalAlert');
+  const requester = document.getElementById('cancelRequesterName').value.trim();
+  const reason    = document.getElementById('cancelReason').value.trim();
+
+  btn.disabled = true;
+  btn.textContent = 'جارٍ الإرسال...';
+  alertEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/cancel-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        booking_id:     selectedCancelBooking.id,
+        requester_name: requester || null,
+        reason:         reason    || null,
+      })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      const bookingSnap = { ...selectedCancelBooking };
+      closeCancelModal();
+      showCancelSuccess(bookingSnap);
+    } else {
+      alertEl.className = 'alert alert-danger';
+      alertEl.style.display = 'flex';
+      alertEl.innerHTML = `<span>⚠️</span><span>${data.error || 'حدث خطأ، الرجاء المحاولة مرة أخرى'}</span>`;
+      btn.disabled = false;
+      btn.textContent = 'إرسال طلب الإلغاء';
+    }
+  } catch(e) {
+    alertEl.className = 'alert alert-danger';
+    alertEl.style.display = 'flex';
+    alertEl.innerHTML = '<span>⚠️</span><span>تعذّر الاتصال بالخادم</span>';
+    btn.disabled = false;
+    btn.textContent = 'إرسال طلب الإلغاء';
+  }
+}
+
+function showCancelSuccess(booking) {
+  document.getElementById('cancelMain').style.display = 'none';
+  document.getElementById('cancelSuccessView').style.display = 'block';
+
+  const r = (booking.room || '').toLowerCase();
+  document.getElementById('cancelSuccessSummary').innerHTML = `
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:0.85rem;">
+      <span style="color:var(--muted);font-weight:600;">رقم الحجز</span><span style="font-weight:700;direction:ltr;">${escHtml(booking.ref||'')}</span>
+      <span style="color:var(--muted);font-weight:600;">الاسم</span><span style="font-weight:700;">${escHtml(booking.name||'')}</span>
+      <span style="color:var(--muted);font-weight:600;">التاريخ</span><span style="font-weight:700;">${formatDateAr(booking.date)}</span>
+      <span style="color:var(--muted);font-weight:600;">الوقت</span><span style="font-weight:700;direction:ltr;">${booking.start_time} – ${booking.end_time}</span>
+    </div>
+  `;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showCancelCalendar() {
+  document.getElementById('cancelSuccessView').style.display = 'none';
+  document.getElementById('cancelMain').style.display = 'block';
+  loadCancelCalendar();
 }
 
 /* ─── Init ─── */
