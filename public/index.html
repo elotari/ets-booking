@@ -3,84 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>حجز قاعة الاجتماعات</title>
+  <title>ETS Smart System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
     .panel { display: none; }
     .panel.active { display: block; }
     #confirmation { display: none; }
     #confirmation.active { display: block; }
+    .time-picker-outer { opacity: 0.4; pointer-events: none; transition: opacity 0.2s; }
+    .time-picker-outer.unlocked { opacity: 1; pointer-events: all; }
 
-    .time-picker-outer {
-      opacity: 0.4;
-      pointer-events: none;
-      transition: opacity 0.2s;
+    /* ── Landing Page ── */
+    #landingPage {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #061826 0%, #0f2a4a 45%, #1a4f8a 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.55s ease;
     }
-    .time-picker-outer.unlocked {
-      opacity: 1;
-      pointer-events: all;
+    #landingPage.fade-out { opacity: 0; pointer-events: none; }
+    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 460px; width: 100%; }
+    .landing-badge {
+      display: inline-block;
+      background: rgba(232,160,0,.14); border: 1.5px solid rgba(232,160,0,.45);
+      color: #e8a000; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 30px;
     }
+    .landing-icon { font-size: 3.8rem; margin-bottom: 14px; line-height: 1; }
+    .landing-title { font-size: 2.4rem; font-weight: 900; color: #fff; margin: 0 0 4px; line-height: 1.2; }
+    .landing-brand { font-size: 1.65rem; font-weight: 700; color: #e8a000; margin: 0 0 8px; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
+    .landing-dept { font-size: 0.98rem; color: rgba(255,255,255,.6); margin: 0 0 44px; font-weight: 600; }
+    .landing-btn {
+      display: inline-block; background: linear-gradient(135deg,#1d5fa8,#2878cc);
+      color: #fff; border: none; border-radius: 14px; padding: 18px 44px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      transition: transform .2s, box-shadow .2s; font-family: inherit;
+      box-shadow: 0 8px 32px rgba(29,95,168,.45); min-width: 230px;
+    }
+    .landing-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(29,95,168,.6); }
+    .landing-lang-btn {
+      position: fixed; top: 20px; inset-inline-start: 20px;
+      background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.9); border-radius: 20px; padding: 7px 20px;
+      font-size: 0.8rem; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+      transition: background .2s; font-family: inherit;
+    }
+    .landing-lang-btn:hover { background: rgba(255,255,255,.22); }
 
+    /* ── Main app lang toggle ── */
+    .main-lang-btn {
+      position: fixed; bottom: 20px; inset-inline-start: 20px;
+      background: var(--blue-mid,#1d5fa8); color: #fff; border: none;
+      border-radius: 20px; padding: 9px 20px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.22);
+      font-family: inherit; letter-spacing: 1px; transition: background .2s;
+    }
+    .main-lang-btn:hover { background: #2878cc; }
   </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════
+     LANDING PAGE
+══════════════════════════════════════ -->
+<div id="landingPage">
+  <button class="landing-lang-btn" id="landingLangBtn" onclick="toggleLang()">EN</button>
+  <div class="landing-wrap">
+    <div class="landing-badge">ETS Smart System</div>
+    <div class="landing-icon">🏢</div>
+    <h1 class="landing-title" id="landingWelcome">أهلاً بك</h1>
+    <div class="landing-brand">Smart System</div>
+    <div class="landing-dept" id="landingDept">الخاص بقسم ETS</div>
+    <button class="landing-btn" onclick="enterSystem()" id="landingBtn">حجز غرفة الاجتماعات</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="mainApp" style="display:none;">
+<button class="main-lang-btn" id="mainLangBtn" onclick="toggleLang()">EN</button>
 <div class="page-wrapper">
 
   <!-- Mode Toggle Tabs -->
   <div class="mode-tabs">
-    <button id="tabBook" class="mode-tab active" onclick="switchMode('book')">📅 حجز جديد</button>
-    <button id="tabCancel" class="mode-tab" onclick="switchMode('cancel')">🗑️ إلغاء حجز</button>
+    <button id="tabBook" class="mode-tab active" onclick="switchMode('book')" data-i18n="tab.book">📅 حجز جديد</button>
+    <button id="tabCancel" class="mode-tab" onclick="switchMode('cancel')" data-i18n="tab.cancel">🗑️ إلغاء حجز</button>
   </div>
 
   <!-- ═══ BOOK SECTION ═══ -->
   <div id="bookSection">
 
-    <!-- Step Bar -->
     <div class="step-bar" id="stepBar">
-      <div class="step-item active" data-step="1">
-        <div class="step-circle">١</div>
-        <div class="step-label">التاريخ والوقت</div>
-      </div>
-      <div class="step-item" data-step="2">
-        <div class="step-circle">٢</div>
-        <div class="step-label">الخدمات</div>
-      </div>
-      <div class="step-item" data-step="3">
-        <div class="step-circle">٣</div>
-        <div class="step-label">بياناتك</div>
-      </div>
-      <div class="step-item" data-step="4">
-        <div class="step-circle">٤</div>
-        <div class="step-label">المراجعة</div>
-      </div>
+      <div class="step-item active" data-step="1"><div class="step-circle">١</div><div class="step-label" data-i18n="step.1">التاريخ والوقت</div></div>
+      <div class="step-item" data-step="2"><div class="step-circle">٢</div><div class="step-label" data-i18n="step.2">الخدمات</div></div>
+      <div class="step-item" data-step="3"><div class="step-circle">٣</div><div class="step-label" data-i18n="step.3">بياناتك</div></div>
+      <div class="step-item" data-step="4"><div class="step-circle">٤</div><div class="step-label" data-i18n="step.4">المراجعة</div></div>
     </div>
 
-    <!-- ═══ PANEL 1: Room + Date + Time ═══ -->
+    <!-- PANEL 1: Date + Time -->
     <div id="panel-1" class="panel active">
       <div class="card">
         <div class="card-header">
-          <h2>حجز قاعة الاجتماعات</h2>
-          <p>اختر التاريخ والوقت المناسب</p>
+          <h2 data-i18n="p1.title">حجز قاعة الاجتماعات</h2>
+          <p data-i18n="p1.subtitle">اختر التاريخ والوقت المناسب</p>
         </div>
-
-        <!-- Alert banner (conflict) -->
         <div id="conflictAlert" class="alert alert-danger" style="display:none;margin:16px 24px 0;">
-          <span>⚠️</span>
-          <span>هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر</span>
+          <span>⚠️</span><span data-i18n="err.conflict">هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر</span>
         </div>
-
-        <!-- Section 1: Calendar -->
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">١</span>
-            اختر التاريخ
-          </div>
-
-          <div id="calendarHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;display:none;"></div>
-
+          <div class="section-title"><span class="sec-num">١</span><span data-i18n="p1.sec1">اختر التاريخ</span></div>
+          <div id="calendarHint" style="font-size:.82rem;color:var(--muted);margin-bottom:10px;display:none;"></div>
           <div id="calendarWrap">
             <div class="calendar-nav">
               <button class="cal-nav-btn" onclick="prevMonth()">&#8250;</button>
@@ -90,1075 +125,908 @@
             <div class="calendar-grid" id="calendarGrid"></div>
           </div>
         </div>
-
-        <!-- Section 3: Time -->
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">٢</span>
-            اختر الوقت
-          </div>
-
-          <div id="timeHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">
-            اختر التاريخ أولاً لعرض الأوقات المتاحة
-          </div>
-
+          <div class="section-title"><span class="sec-num">٢</span><span data-i18n="p1.sec2">اختر الوقت</span></div>
+          <div id="timeHint" style="font-size:.82rem;color:var(--muted);margin-bottom:12px;" data-i18n="p1.time_hint">اختر التاريخ أولاً لعرض الأوقات المتاحة</div>
           <div id="timePicker" class="time-picker-outer">
             <div class="time-picker-container">
               <div>
-                <div class="time-col-label">⏱ وقت البداية</div>
+                <div class="time-col-label" id="startColLabel" data-i18n="p1.start_label">⏱ وقت البداية</div>
                 <div class="time-list" id="startList"></div>
               </div>
               <div>
-                <div class="time-col-label">⏰ وقت النهاية</div>
+                <div class="time-col-label" id="endColLabel" data-i18n="p1.end_label">⏰ وقت النهاية</div>
                 <div class="time-list" id="endList">
-                  <div style="font-size:0.8rem;color:var(--muted);padding:12px;text-align:center;">
-                    اختر وقت البداية أولاً
-                  </div>
+                  <div id="endListHint" style="font-size:.8rem;color:var(--muted);padding:12px;text-align:center;" data-i18n="p1.end_hint">اختر وقت البداية أولاً</div>
                 </div>
               </div>
             </div>
             <div id="durationBar" class="duration-bar" style="display:none;"></div>
           </div>
         </div>
-
         <div class="btn-strip">
-          <button class="btn-primary" onclick="goStep2()">التالي ←</button>
+          <button class="btn-primary" onclick="goStep2()" data-i18n="btn.next">التالي ←</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PANEL 2: Services ═══ -->
+    <!-- PANEL 2: Services -->
     <div id="panel-2" class="panel">
       <div class="card">
         <div class="card-header">
-          <h2>الخدمات الإضافية</h2>
-          <p>اختر الخدمات التي تحتاجها للاجتماع (اختياري)</p>
+          <h2 data-i18n="p2.title">الخدمات الإضافية</h2>
+          <p data-i18n="p2.subtitle">اختر الخدمات التي تحتاجها للاجتماع (اختياري)</p>
         </div>
-
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">١</span>
-            الخدمات المتاحة
-          </div>
+          <div class="section-title"><span class="sec-num">١</span><span data-i18n="p2.sec1">الخدمات المتاحة</span></div>
           <div class="services-grid">
             <div class="service-card" id="svc-drinks" onclick="toggleService('drinks', this)">
               <span class="service-check">✓</span>
               <div class="service-icon">☕</div>
-              <div class="service-name">مشروبات</div>
+              <div class="service-name" data-i18n="svc.drinks">مشروبات</div>
             </div>
             <div class="service-card" id="svc-catering" onclick="toggleService('catering', this)">
               <span class="service-check">✓</span>
               <div class="service-icon">🍽️</div>
-              <div class="service-name">كيترينج</div>
-            </div>
-            <div class="service-card" id="svc-projector" onclick="toggleService('projector', this)">
-              <span class="service-check">✓</span>
-              <div class="service-icon">📽️</div>
-              <div class="service-name">جهاز عرض</div>
-            </div>
-            <div class="service-card" id="svc-video" onclick="toggleService('video', this)">
-              <span class="service-check">✓</span>
-              <div class="service-icon">💻</div>
-              <div class="service-name">Video Conference</div>
+              <div class="service-name" data-i18n="svc.catering">كيترينج</div>
             </div>
           </div>
         </div>
-
         <div class="btn-strip">
-          <button class="btn-primary" onclick="goStep3()">التالي ←</button>
-          <button class="btn-ghost" onclick="showStep(1)">→ السابق</button>
+          <button class="btn-primary" onclick="goStep3()" data-i18n="btn.next">التالي ←</button>
+          <button class="btn-ghost" onclick="showStep(1)" data-i18n="btn.prev">→ السابق</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PANEL 3: Employee Details ═══ -->
+    <!-- PANEL 3: Details -->
     <div id="panel-3" class="panel">
       <div class="card">
         <div class="card-header">
-          <h2>بياناتك</h2>
-          <p>أدخل بياناتك للإكمال الحجز</p>
+          <h2 data-i18n="p3.title">بياناتك</h2>
+          <p data-i18n="p3.subtitle">أدخل بياناتك للإكمال الحجز</p>
         </div>
-
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">١</span>
-            المعلومات الشخصية
-          </div>
+          <div class="section-title"><span class="sec-num">١</span><span data-i18n="p3.sec1">المعلومات الشخصية</span></div>
           <div class="form-grid">
             <div class="form-group">
-              <label class="form-label"><span class="req">*</span> الاسم الكامل</label>
-              <input class="form-input" id="fName" type="text" placeholder="أدخل اسمك الكامل" />
+              <label class="form-label"><span class="req">*</span> <span data-i18n="label.name">الاسم الكامل</span></label>
+              <input class="form-input" id="fName" type="text" />
             </div>
             <div class="form-group">
-              <label class="form-label"><span class="req">*</span> رقم الوظيفي</label>
-              <input class="form-input" id="fEmpId" type="text" placeholder="أدخل رقمك الوظيفي" dir="ltr" />
+              <label class="form-label"><span class="req">*</span> <span data-i18n="label.empid">رقم الوظيفي</span></label>
+              <input class="form-input" id="fEmpId" type="text" dir="ltr" />
             </div>
             <div class="form-group">
-              <label class="form-label"><span class="req">*</span> القسم</label>
+              <label class="form-label"><span class="req">*</span> <span data-i18n="label.dept">القسم</span></label>
               <select class="form-select" id="fDept" onchange="handleDeptChange()">
-                <option value="">— اختر القسم —</option>
+                <option value="" id="deptPlaceholder">— اختر القسم —</option>
                 <option value="ETS">ETS</option>
                 <option value="EO">EO</option>
                 <option value="EM">EM</option>
                 <option value="EOM&amp;M">EOM&amp;M</option>
                 <option value="Manager EOG">Manager EOG</option>
-                <option value="__other__">أخرى...</option>
+                <option value="__other__" id="deptOtherOpt">أخرى...</option>
               </select>
-              <input class="form-input" id="fDeptOther" type="text" placeholder="اكتب اسم القسم" style="display:none;margin-top:8px;" />
+              <input class="form-input" id="fDeptOther" type="text" style="display:none;margin-top:8px;" />
             </div>
             <div class="form-group full">
-              <label class="form-label"><span class="req">*</span> موضوع الاجتماع (Subject)</label>
-              <input class="form-input" id="fSubject" type="text" placeholder="أدخل موضوع الاجتماع" />
+              <label class="form-label"><span class="req">*</span> <span data-i18n="label.subject">موضوع الاجتماع (Subject)</span></label>
+              <input class="form-input" id="fSubject" type="text" />
             </div>
             <div class="form-group">
-              <label class="form-label"><span class="req">*</span> البريد الإلكتروني</label>
+              <label class="form-label"><span class="req">*</span> <span data-i18n="label.email">البريد الإلكتروني</span></label>
               <input class="form-input" id="fEmail" type="email" placeholder="example@company.com" dir="ltr" />
             </div>
             <div class="form-group">
-              <label class="form-label">رقم الهاتف</label>
+              <label class="form-label"><span data-i18n="label.phone">رقم الهاتف</span></label>
               <input class="form-input" id="fPhone" type="tel" placeholder="+966 5X XXX XXXX" dir="ltr" />
             </div>
             <div class="form-group full">
-              <label class="form-label">ملاحظات إضافية</label>
-              <textarea class="form-textarea" id="fNotes" placeholder="أي ملاحظات أو متطلبات خاصة..."></textarea>
+              <label class="form-label"><span data-i18n="label.notes">ملاحظات إضافية</span></label>
+              <textarea class="form-textarea" id="fNotes"></textarea>
             </div>
           </div>
         </div>
-
         <div class="btn-strip">
-          <button class="btn-primary" onclick="goStep4()">مراجعة الحجز ←</button>
-          <button class="btn-ghost" onclick="showStep(2)">→ السابق</button>
+          <button class="btn-primary" onclick="goStep4()" data-i18n="p3.next">مراجعة الحجز ←</button>
+          <button class="btn-ghost" onclick="showStep(2)" data-i18n="btn.prev">→ السابق</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PANEL 4: Review ═══ -->
+    <!-- PANEL 4: Review -->
     <div id="panel-4" class="panel">
       <div class="card">
         <div class="card-header">
-          <h2>مراجعة الحجز</h2>
-          <p>تأكد من تفاصيل الحجز قبل الإرسال</p>
+          <h2 data-i18n="p4.title">مراجعة الحجز</h2>
+          <p data-i18n="p4.subtitle">تأكد من تفاصيل الحجز قبل الإرسال</p>
         </div>
-
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">١</span>
-            ملخص الحجز
-          </div>
+          <div class="section-title"><span class="sec-num">١</span><span data-i18n="p4.sec1">ملخص الحجز</span></div>
           <table class="review-table" id="reviewTable"></table>
         </div>
-
         <div id="submitAlert" class="alert alert-danger" style="display:none;margin:0 24px 0;"></div>
-
         <div class="btn-strip">
-          <button class="btn-primary" id="submitBtn" onclick="submitBooking()">تأكيد الحجز ✓</button>
-          <button class="btn-ghost" onclick="showStep(3)">→ تعديل</button>
+          <button class="btn-primary" id="submitBtn" onclick="submitBooking()" data-i18n="btn.confirm">تأكيد الحجز ✓</button>
+          <button class="btn-ghost" onclick="showStep(3)" data-i18n="btn.edit">→ تعديل</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ CONFIRMATION SCREEN ═══ -->
+    <!-- CONFIRMATION -->
     <div id="confirmation">
       <div class="card">
         <div class="card-header">
-          <h2>تم تأكيد الحجز</h2>
-          <p>سيتم الإرسال إلى قسم الخدمات</p>
+          <h2 data-i18n="conf.title">تم تأكيد الحجز</h2>
+          <p data-i18n="conf.subtitle">سيتم الإرسال إلى قسم الخدمات</p>
         </div>
         <div class="confirm-screen">
           <div class="confirm-icon">✅</div>
-          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">
-            تم الحجز بنجاح!
-          </div>
-          <div style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">
-            رقم مرجع الحجز الخاص بك
-          </div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;" data-i18n="conf.success">تم الحجز بنجاح!</div>
+          <div style="font-size:.88rem;color:var(--muted);margin-bottom:16px;" data-i18n="conf.ref_label">رقم مرجع الحجز الخاص بك</div>
           <div class="confirm-ref" id="confirmRef"></div>
-          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:28px;">
-            احتفظ بهذا الرقم للرجوع إليه لاحقاً
-          </div>
-          <div id="confirmSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
-          <button class="btn-primary" onclick="resetApp()" style="min-width:180px;">
-            ← حجز آخر
-          </button>
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:28px;" data-i18n="conf.ref_hint">احتفظ بهذا الرقم للرجوع إليه لاحقاً</div>
+          <div id="confirmSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
+          <button class="btn-primary" onclick="resetApp()" style="min-width:180px;" data-i18n="conf.new">← حجز آخر</button>
         </div>
       </div>
     </div>
-
-  </div><!-- End bookSection -->
+  </div><!-- end bookSection -->
 
   <!-- ═══ CANCEL SECTION ═══ -->
   <div id="cancelSection" style="display:none;">
 
-    <!-- 1: Lookup by employee ID -->
     <div id="cancelLookupView">
       <div class="card">
         <div class="card-header">
-          <h2>إلغاء حجز</h2>
-          <p>أدخل رقمك الوظيفي لعرض حجوزاتك</p>
+          <h2 data-i18n="cancel.title">إلغاء حجز</h2>
+          <p data-i18n="cancel.subtitle">أدخل رقمك الوظيفي لعرض حجوزاتك</p>
         </div>
         <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">١</span>
-            رقم الوظيفي
-          </div>
+          <div class="section-title"><span class="sec-num">١</span><span data-i18n="cancel.sec1">رقم الوظيفي</span></div>
           <div class="form-group" style="max-width:320px;">
-            <input class="form-input" id="cancelEmpId" type="text" placeholder="أدخل رقمك الوظيفي" dir="ltr" />
+            <input class="form-input" id="cancelEmpId" type="text" dir="ltr" />
           </div>
           <div id="cancelLookupAlert" class="alert alert-danger" style="display:none;margin-top:12px;">
             <span>⚠️</span><span id="cancelLookupAlertMsg"></span>
           </div>
         </div>
         <div class="btn-strip">
-          <button class="btn-primary" id="cancelSearchBtn" onclick="lookupEmployeeBookings()">بحث ←</button>
+          <button class="btn-primary" id="cancelSearchBtn" onclick="lookupEmployeeBookings()" data-i18n="cancel.search">بحث ←</button>
         </div>
       </div>
     </div>
 
-    <!-- 2: Bookings list -->
     <div id="cancelListView" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <h2>حجوزاتك</h2>
+          <h2 data-i18n="cancel.list_title">حجوزاتك</h2>
           <p id="cancelListSubtitle"></p>
         </div>
         <div id="cancelBookingsContent" class="card-section"></div>
         <div class="btn-strip">
-          <button class="btn-ghost" onclick="showCancelLookup()">→ تغيير رقم الوظيفي</button>
+          <button class="btn-ghost" onclick="showCancelLookup()" data-i18n="cancel.change">→ تغيير رقم الوظيفي</button>
         </div>
       </div>
     </div>
 
-    <!-- 3: Success -->
     <div id="cancelSuccessView" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <h2>تم الإرسال</h2>
-          <p>طلب الإلغاء في انتظار مراجعة السكرتيرة</p>
+          <h2 data-i18n="cancel.success_title">تم الإرسال</h2>
+          <p data-i18n="cancel.success_subtitle">طلب الإلغاء في انتظار مراجعة السكرتيرة</p>
         </div>
         <div class="confirm-screen">
           <div class="confirm-icon">📨</div>
-          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">
-            تم إرسال طلب الإلغاء بنجاح!
-          </div>
-          <div style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">
-            ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء
-          </div>
-          <div id="cancelSuccessSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
-          <button class="btn-primary" onclick="showCancelLookup()" style="min-width:180px;">
-            ← طلب إلغاء آخر
-          </button>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;" data-i18n="cancel.success_msg">تم إرسال طلب الإلغاء بنجاح!</div>
+          <div style="font-size:.88rem;color:var(--muted);margin-bottom:16px;" data-i18n="cancel.success_note">ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء</div>
+          <div id="cancelSuccessSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
+          <button class="btn-primary" onclick="showCancelLookup()" style="min-width:180px;" data-i18n="cancel.another">← طلب إلغاء آخر</button>
         </div>
       </div>
     </div>
 
-  </div><!-- End cancelSection -->
+  </div><!-- end cancelSection -->
 
-</div><!-- End page-wrapper -->
+</div><!-- end page-wrapper -->
+</div><!-- end mainApp -->
 
-<!-- Cancel Request Modal -->
+<!-- Cancel Modal -->
 <div class="cancel-modal-overlay" id="cancelModalOverlay" onclick="handleCancelOverlayClick(event)">
   <div class="cancel-modal" onclick="event.stopPropagation()">
     <div class="cancel-modal-head">
-      <h3>طلب إلغاء الحجز</h3>
+      <h3 data-i18n="cancel.modal_title">طلب إلغاء الحجز</h3>
       <button class="drawer-close" onclick="closeCancelModal()">✕</button>
     </div>
     <div class="cancel-modal-body" id="cancelModalBody"></div>
     <div class="cancel-modal-foot">
-      <button class="btn-danger" id="cancelSubmitBtn" onclick="submitCancelRequest()">إرسال طلب الإلغاء</button>
-      <button class="btn-ghost" onclick="closeCancelModal()">إغلاق</button>
+      <button class="btn-danger" id="cancelSubmitBtn" onclick="submitCancelRequest()" data-i18n="cancel.submit">إرسال طلب الإلغاء</button>
+      <button class="btn-ghost" onclick="closeCancelModal()" data-i18n="btn.close">إغلاق</button>
     </div>
   </div>
 </div>
 
 <!-- Secretary link -->
 <div class="secretary-link">
-  <a href="/secretary">دخول السكرتيرة</a>
+  <a href="/secretary" data-i18n="secretary_link">دخول السكرتيرة</a>
 </div>
 
 <script>
-/* ─── Shared helpers ─── */
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
-/* ─── Booking State ─── */
-const state = {
-  step: 1,
-  room: 'a',
-  date: null,
-  startTime: null,
-  endTime: null,
-  services: [],
-  name: '', empId: '', dept: '', subject: '', email: '', phone: '', notes: '',
-  calYear: new Date().getFullYear(),
-  calMonth: new Date().getMonth(),
-  bookingsForDate: [],
-  datesWithBookings: new Set(),
+/* ═══════════════════════════════════════════════════
+   TRANSLATIONS
+═══════════════════════════════════════════════════ */
+const TRANS = {
+  ar: {
+    'landing.welcome':'أهلاً بك','landing.dept':'الخاص بقسم ETS','landing.btn':'حجز غرفة الاجتماعات',
+    'tab.book':'📅 حجز جديد','tab.cancel':'🗑️ إلغاء حجز',
+    'step.1':'التاريخ والوقت','step.2':'الخدمات','step.3':'بياناتك','step.4':'المراجعة',
+    'p1.title':'حجز قاعة الاجتماعات','p1.subtitle':'اختر التاريخ والوقت المناسب',
+    'p1.sec1':'اختر التاريخ','p1.sec2':'اختر الوقت',
+    'p1.time_hint':'اختر التاريخ أولاً لعرض الأوقات المتاحة',
+    'p1.start_label':'⏱ وقت البداية','p1.end_label':'⏰ وقت النهاية',
+    'p1.end_hint':'اختر وقت البداية أولاً',
+    'p2.title':'الخدمات الإضافية','p2.subtitle':'اختر الخدمات التي تحتاجها للاجتماع (اختياري)',
+    'p2.sec1':'الخدمات المتاحة','svc.drinks':'مشروبات','svc.catering':'كيترينج',
+    'p3.title':'بياناتك','p3.subtitle':'أدخل بياناتك للإكمال الحجز',
+    'p3.sec1':'المعلومات الشخصية','p3.next':'مراجعة الحجز ←',
+    'label.name':'الاسم الكامل','label.empid':'رقم الوظيفي','label.dept':'القسم',
+    'label.subject':'موضوع الاجتماع (Subject)','label.email':'البريد الإلكتروني',
+    'label.phone':'رقم الهاتف','label.notes':'ملاحظات إضافية',
+    'ph.name':'أدخل اسمك الكامل','ph.empid':'أدخل رقمك الوظيفي',
+    'ph.dept':'— اختر القسم —','ph.dept_other':'اكتب اسم القسم',
+    'ph.subject':'أدخل موضوع الاجتماع','ph.notes':'أي ملاحظات أو متطلبات خاصة...',
+    'dept.other':'أخرى...',
+    'p4.title':'مراجعة الحجز','p4.subtitle':'تأكد من تفاصيل الحجز قبل الإرسال',
+    'p4.sec1':'ملخص الحجز',
+    'btn.next':'التالي ←','btn.prev':'→ السابق','btn.confirm':'تأكيد الحجز ✓',
+    'btn.edit':'→ تعديل','btn.close':'إغلاق','btn.sending':'جارٍ الإرسال...',
+    'conf.title':'تم تأكيد الحجز','conf.subtitle':'سيتم الإرسال إلى قسم الخدمات',
+    'conf.success':'تم الحجز بنجاح!','conf.ref_label':'رقم مرجع الحجز الخاص بك',
+    'conf.ref_hint':'احتفظ بهذا الرقم للرجوع إليه لاحقاً','conf.new':'← حجز آخر',
+    'err.conflict':'هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر',
+    'err.date':'الرجاء اختيار التاريخ','err.start':'الرجاء اختيار وقت البداية',
+    'err.end':'الرجاء اختيار وقت النهاية','err.name':'الرجاء إدخال الاسم الكامل',
+    'err.empid':'الرجاء إدخال رقمك الوظيفي','err.dept':'الرجاء اختيار القسم',
+    'err.dept_other':'الرجاء إدخال اسم القسم','err.subject':'الرجاء إدخال موضوع الاجتماع',
+    'err.email':'الرجاء إدخال البريد الإلكتروني','err.server':'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
+    'cancel.title':'إلغاء حجز','cancel.subtitle':'أدخل رقمك الوظيفي لعرض حجوزاتك',
+    'cancel.sec1':'رقم الوظيفي','cancel.search':'بحث ←','cancel.searching':'جارٍ البحث...',
+    'cancel.list_title':'حجوزاتك','cancel.change':'→ تغيير رقم الوظيفي',
+    'cancel.no_bookings':'لا توجد حجوزات قادمة مرتبطة بهذا الرقم الوظيفي',
+    'cancel.req_btn':'طلب إلغاء','cancel.modal_title':'طلب إلغاء الحجز',
+    'cancel.reason_label':'سبب الإلغاء (اختياري)',
+    'cancel.reason_ph':'اذكر سبب طلب الإلغاء إن أردت...',
+    'cancel.submit':'إرسال طلب الإلغاء','cancel.submitting':'جارٍ الإرسال...',
+    'cancel.success_title':'تم الإرسال','cancel.success_subtitle':'طلب الإلغاء في انتظار مراجعة السكرتيرة',
+    'cancel.success_msg':'تم إرسال طلب الإلغاء بنجاح!',
+    'cancel.success_note':'ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء',
+    'cancel.another':'← طلب إلغاء آخر','cancel.err_empid':'الرجاء إدخال رقمك الوظيفي',
+    'cancel.err_server':'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
+    'secretary_link':'دخول السكرتيرة',
+    'slot.booked':'محجوز','slot.available':'متاح',
+    'rev.room':'القاعة','rev.date':'التاريخ','rev.start':'وقت البداية','rev.end':'وقت النهاية',
+    'rev.duration':'المدة','rev.services':'الخدمات','rev.name':'الاسم','rev.empid':'رقم الوظيفي',
+    'rev.dept':'القسم','rev.subject':'الموضوع','rev.email':'البريد','rev.phone':'الهاتف','rev.notes':'ملاحظات',
+    'no_services':'لا يوجد','conf.room':'القاعة','conf.date':'التاريخ','conf.time':'الوقت',
+    'conf.name':'الاسم','conf.services':'الخدمات',
+    'cancel.ref':'رقم المرجع','cancel.booking_name':'الاسم','cancel.booking_date':'التاريخ',
+    'cancel.booking_time':'الوقت','cancel.booking_subject':'الموضوع',
+    'lang_toggle':'EN',
+  },
+  en: {
+    'landing.welcome':'Welcome','landing.dept':'ETS Department','landing.btn':'Book Meeting Room',
+    'tab.book':'📅 New Booking','tab.cancel':'🗑️ Cancel Booking',
+    'step.1':'Date & Time','step.2':'Services','step.3':'Your Details','step.4':'Review',
+    'p1.title':'Meeting Room Booking','p1.subtitle':'Select your preferred date and time',
+    'p1.sec1':'Select Date','p1.sec2':'Select Time',
+    'p1.time_hint':'Select a date first to view available times',
+    'p1.start_label':'⏱ Start Time','p1.end_label':'⏰ End Time',
+    'p1.end_hint':'Select start time first',
+    'p2.title':'Additional Services','p2.subtitle':'Select services needed for the meeting (optional)',
+    'p2.sec1':'Available Services','svc.drinks':'Drinks','svc.catering':'Catering',
+    'p3.title':'Your Details','p3.subtitle':'Enter your details to complete the booking',
+    'p3.sec1':'Personal Information','p3.next':'Review Booking →',
+    'label.name':'Full Name','label.empid':'Employee ID','label.dept':'Department',
+    'label.subject':'Meeting Subject','label.email':'Email Address',
+    'label.phone':'Phone Number','label.notes':'Additional Notes',
+    'ph.name':'Enter your full name','ph.empid':'Enter your employee ID',
+    'ph.dept':'— Select Department —','ph.dept_other':'Enter department name',
+    'ph.subject':'Enter meeting subject','ph.notes':'Any special notes or requirements...',
+    'dept.other':'Other...',
+    'p4.title':'Review Booking','p4.subtitle':'Verify your details before submitting',
+    'p4.sec1':'Booking Summary',
+    'btn.next':'Next →','btn.prev':'← Back','btn.confirm':'Confirm Booking ✓',
+    'btn.edit':'← Edit','btn.close':'Close','btn.sending':'Sending...',
+    'conf.title':'Booking Confirmed','conf.subtitle':'Will be forwarded to services department',
+    'conf.success':'Booking Successful!','conf.ref_label':'Your booking reference number',
+    'conf.ref_hint':'Keep this number for future reference','conf.new':'→ New Booking',
+    'err.conflict':'This time slot is already booked, please select another time',
+    'err.date':'Please select a date','err.start':'Please select a start time',
+    'err.end':'Please select an end time','err.name':'Please enter your full name',
+    'err.empid':'Please enter your employee ID','err.dept':'Please select a department',
+    'err.dept_other':'Please enter the department name',
+    'err.subject':'Please enter the meeting subject',
+    'err.email':'Please enter your email address',
+    'err.server':'Unable to connect to server. Please try again later.',
+    'cancel.title':'Cancel Booking','cancel.subtitle':'Enter your employee ID to view your bookings',
+    'cancel.sec1':'Employee ID','cancel.search':'Search →','cancel.searching':'Searching...',
+    'cancel.list_title':'Your Bookings','cancel.change':'← Change Employee ID',
+    'cancel.no_bookings':'No upcoming bookings found for this employee ID',
+    'cancel.req_btn':'Request Cancellation','cancel.modal_title':'Request Booking Cancellation',
+    'cancel.reason_label':'Reason for cancellation (optional)',
+    'cancel.reason_ph':'State your reason if desired...',
+    'cancel.submit':'Submit Cancellation Request','cancel.submitting':'Submitting...',
+    'cancel.success_title':'Submitted','cancel.success_subtitle':'Cancellation request awaiting secretary review',
+    'cancel.success_msg':'Cancellation request sent successfully!',
+    'cancel.success_note':'The secretary will review your request and confirm the cancellation',
+    'cancel.another':'→ Another Cancellation','cancel.err_empid':'Please enter your employee ID',
+    'cancel.err_server':'Unable to connect to server. Please try again later.',
+    'secretary_link':'Secretary Login',
+    'slot.booked':'Booked','slot.available':'Available',
+    'rev.room':'Room','rev.date':'Date','rev.start':'Start Time','rev.end':'End Time',
+    'rev.duration':'Duration','rev.services':'Services','rev.name':'Name','rev.empid':'Employee ID',
+    'rev.dept':'Department','rev.subject':'Subject','rev.email':'Email','rev.phone':'Phone','rev.notes':'Notes',
+    'no_services':'None','conf.room':'Room','conf.date':'Date','conf.time':'Time',
+    'conf.name':'Name','conf.services':'Services',
+    'cancel.ref':'Reference','cancel.booking_name':'Name','cancel.booking_date':'Date',
+    'cancel.booking_time':'Time','cancel.booking_subject':'Subject',
+    'lang_toggle':'عربي',
+  }
 };
 
-/* ─── Arabic helpers ─── */
+let currentLang = 'ar';
+function t(k) { return (TRANS[currentLang]||{})[k] || (TRANS.ar||{})[k] || k; }
+
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const AR_DAYS   = ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+const EN_DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-function toAr(n) {
-  return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+function months() { return currentLang === 'en' ? EN_MONTHS : AR_MONTHS; }
+function days()   { return currentLang === 'en' ? EN_DAYS   : AR_DAYS; }
+
+/* ─── Language toggle ─── */
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  const html = document.documentElement;
+  html.lang = currentLang;
+  html.dir  = currentLang === 'en' ? 'ltr' : 'rtl';
+  applyTranslations();
+  renderCalendar();
 }
 
-function pad(n) { return String(n).padStart(2,'0'); }
-
-function timeToMin(t) {
-  const [h,m] = t.split(':').map(Number);
-  return h*60+m;
+function applyTranslations() {
+  // data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  // lang toggle buttons
+  const langLabel = t('lang_toggle');
+  document.getElementById('landingLangBtn').textContent = langLabel;
+  document.getElementById('mainLangBtn').textContent    = langLabel;
+  // landing page
+  document.getElementById('landingWelcome').textContent = t('landing.welcome');
+  document.getElementById('landingDept').textContent    = t('landing.dept');
+  document.getElementById('landingBtn').textContent     = t('landing.btn');
+  // placeholders
+  document.getElementById('fName').placeholder    = t('ph.name');
+  document.getElementById('fEmpId').placeholder   = t('ph.empid');
+  document.getElementById('fSubject').placeholder = t('ph.subject');
+  document.getElementById('fNotes').placeholder   = t('ph.notes');
+  document.getElementById('fDeptOther').placeholder = t('ph.dept_other');
+  document.getElementById('cancelEmpId').placeholder = t('ph.empid');
+  // dept select options
+  document.getElementById('deptPlaceholder').textContent = t('ph.dept');
+  document.getElementById('deptOtherOpt').textContent    = t('dept.other');
+  // endList hint
+  const endListHint = document.getElementById('endListHint');
+  if (endListHint) endListHint.textContent = t('p1.end_hint');
+  // conflict alert text
+  const conflictSpan = document.querySelector('#conflictAlert span:last-child');
+  if (conflictSpan) conflictSpan.textContent = t('err.conflict');
+  // step circles: update arabic numerals when switching
+  document.querySelectorAll('.step-circle').forEach((el, i) => {
+    el.textContent = currentLang === 'en' ? String(i+1) : ['١','٢','٣','٤'][i];
+  });
+  // sec-num circles
+  document.querySelectorAll('.sec-num').forEach((el, i) => {
+    el.textContent = currentLang === 'en' ? String(i+1) : '١';
+  });
 }
 
-function minToTime(m) {
-  return pad(Math.floor(m/60)) + ':' + pad(m%60);
+/* ─── Landing / Enter system ─── */
+function enterSystem() {
+  const landing = document.getElementById('landingPage');
+  landing.classList.add('fade-out');
+  setTimeout(() => {
+    landing.style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+  }, 580);
 }
 
-function formatDuration(mins) {
-  if (mins === 30)  return '٣٠ د';
-  if (mins === 60)  return 'ساعة';
-  if (mins === 90)  return 'س ٣٠د';
-  if (mins === 120) return 'ساعتان';
-  const h = Math.floor(mins/60), m = mins%60;
-  return m === 0 ? `${toAr(h)} ساعة` : `${toAr(h)}س ${toAr(m)}د`;
+/* ─── Shared helpers ─── */
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function toAr(n) { return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); }
+function pad(n)  { return String(n).padStart(2,'0'); }
+function timeToMin(t2) { const [h,m]=t2.split(':').map(Number); return h*60+m; }
+function minToTime(m)  { return pad(Math.floor(m/60))+':'+pad(m%60); }
 
-function overlap(s1, e1, s2, e2) {
-  return s1 < e2 && e1 > s2;
-}
-
-function formatDateAr(dateStr) {
+function formatDate(dateStr) {
   if (!dateStr) return '—';
   const [y,m,d] = dateStr.split('-');
-  return `${toAr(parseInt(d))} ${AR_MONTHS[parseInt(m)-1]} ${toAr(y)}`;
+  if (currentLang === 'en') return `${months()[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+  return `${toAr(parseInt(d))} ${months()[parseInt(m)-1]} ${toAr(y)}`;
+}
+// keep alias for email.js usage
+function formatDateAr(dateStr) { return formatDate(dateStr); }
+
+function formatDuration(mins) {
+  if (currentLang === 'en') {
+    if (mins===30) return '30 min'; if (mins===60) return '1 hour';
+    if (mins===90) return '1.5 hrs'; if (mins===120) return '2 hours';
+    const h=Math.floor(mins/60),m=mins%60;
+    return m===0?`${h}h`:`${h}h ${m}m`;
+  }
+  if (mins===30) return '٣٠ د'; if (mins===60) return 'ساعة';
+  if (mins===90) return 'س ٣٠د'; if (mins===120) return 'ساعتان';
+  const h=Math.floor(mins/60),m=mins%60;
+  return m===0?`${toAr(h)} ساعة`:`${toAr(h)}س ${toAr(m)}د`;
 }
 
-function roomLabel(r) {
-  return 'غرفة اجتماعات ETS';
+function roomLabel() {
+  return 'Export Technical Service (ETS) Team, Conference Room, Amira Court Block Q, Ahmadi';
 }
 
 function serviceLabel(s) {
-  return { drinks:'مشروبات', catering:'كيترينج', projector:'جهاز عرض', video:'Video Conference' }[s] || s;
+  const map = { drinks: t('svc.drinks'), catering: t('svc.catering'), projector: t('svc.drinks'), video: 'Video Conference' };
+  return map[s] || s;
 }
+
+function overlap(s1,e1,s2,e2) { return s1<e2 && e1>s2; }
+
+/* ─── Booking State ─── */
+const state = {
+  step:1, room:'a', date:null, startTime:null, endTime:null, services:[],
+  name:'', empId:'', dept:'', subject:'', email:'', phone:'', notes:'',
+  calYear: new Date().getFullYear(), calMonth: new Date().getMonth(),
+  bookingsForDate:[], datesWithBookings: new Set(),
+};
 
 /* ─── Mode Toggle ─── */
 function switchMode(mode) {
-  const bookSection   = document.getElementById('bookSection');
-  const cancelSection = document.getElementById('cancelSection');
-  const tabBook       = document.getElementById('tabBook');
-  const tabCancel     = document.getElementById('tabCancel');
-
-  if (mode === 'book') {
-    bookSection.style.display   = 'block';
-    cancelSection.style.display = 'none';
-    tabBook.classList.add('active');
-    tabCancel.classList.remove('active');
+  const bSec = document.getElementById('bookSection');
+  const cSec = document.getElementById('cancelSection');
+  const tBook = document.getElementById('tabBook');
+  const tCancel = document.getElementById('tabCancel');
+  if (mode==='book') {
+    bSec.style.display='block'; cSec.style.display='none';
+    tBook.classList.add('active'); tCancel.classList.remove('active');
   } else {
-    bookSection.style.display   = 'none';
-    cancelSection.style.display = 'block';
-    tabCancel.classList.add('active');
-    tabBook.classList.remove('active');
+    bSec.style.display='none'; cSec.style.display='block';
+    tCancel.classList.add('active'); tBook.classList.remove('active');
     showCancelLookup();
   }
 }
 
 /* ─── Step Navigation ─── */
 function showStep(n) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const panel = document.getElementById('panel-'+n);
   if (panel) panel.classList.add('active');
   document.getElementById('confirmation').style.display = 'none';
   state.step = n;
   updateStepBar();
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function updateStepBar() {
   document.querySelectorAll('.step-item').forEach(el => {
     const s = parseInt(el.dataset.step);
     el.classList.remove('active','done');
-    if (s === state.step) el.classList.add('active');
-    else if (s < state.step) el.classList.add('done');
+    if (s===state.step) el.classList.add('active');
+    else if (s<state.step) el.classList.add('done');
   });
 }
 
-/* ─── Room Selection ─── */
-function selectRoom(r) {
-  state.room = r;
-  state.date = null;
-  state.startTime = null;
-  state.endTime = null;
-  state.bookingsForDate = [];
-  state.datesWithBookings = new Set();
-
-  document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('room-'+r).classList.add('selected');
-
-  loadRoomBookingDates(r);
-
-  document.getElementById('calendarHint').style.display = 'none';
-  renderCalendar();
-  resetTimePicker();
-}
-
+/* ─── Calendar ─── */
 async function loadRoomBookingDates(room) {
   try {
     const res = await fetch('/api/bookings/all');
     const all = await res.json();
     const dates = new Set();
-    all.forEach(b => { if (b.room === room) dates.add(b.date); });
+    all.forEach(b => { if (b.room===room) dates.add(b.date); });
     state.datesWithBookings = dates;
     renderCalendar();
-  } catch(e) { /* ignore */ }
+  } catch(e) {}
 }
 
-/* ─── Calendar ─── */
-function prevMonth() {
-  state.calMonth--;
-  if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
-  renderCalendar();
-}
-
-function nextMonth() {
-  state.calMonth++;
-  if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
-  renderCalendar();
-}
+function prevMonth() { state.calMonth--; if(state.calMonth<0){state.calMonth=11;state.calYear--;} renderCalendar(); }
+function nextMonth() { state.calMonth++; if(state.calMonth>11){state.calMonth=0;state.calYear++;} renderCalendar(); }
 
 function renderCalendar() {
   const label = document.getElementById('monthLabel');
-  label.textContent = AR_MONTHS[state.calMonth] + ' ' + toAr(state.calYear);
+  label.textContent = months()[state.calMonth] + ' ' + (currentLang==='en'?state.calYear:toAr(state.calYear));
 
   const grid = document.getElementById('calendarGrid');
   grid.innerHTML = '';
 
-  AR_DAYS.forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'cal-day-header';
-    el.textContent = d;
-    grid.appendChild(el);
+  days().forEach(d => {
+    const el=document.createElement('div'); el.className='cal-day-header'; el.textContent=d; grid.appendChild(el);
   });
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  const today=new Date(); today.setHours(0,0,0,0);
+  const firstDay=new Date(state.calYear,state.calMonth,1).getDay();
+  const daysInMonth=new Date(state.calYear,state.calMonth+1,0).getDate();
 
-  const firstDay = new Date(state.calYear, state.calMonth, 1).getDay();
-  const daysInMonth = new Date(state.calYear, state.calMonth+1, 0).getDate();
+  for(let i=0;i<firstDay;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
 
-  for (let i = 0; i < firstDay; i++) {
-    const el = document.createElement('div');
-    el.className = 'cal-day empty';
-    grid.appendChild(el);
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(state.calYear, state.calMonth, d);
-    const dow  = date.getDay();
-    const isPast    = date < today;
-    const isWeekend = dow === 5 || dow === 6;
-    const dateStr   = `${state.calYear}-${pad(state.calMonth+1)}-${pad(d)}`;
-    const isToday   = date.getTime() === today.getTime();
-    const isSelected = dateStr === state.date;
-    const hasBookings = state.datesWithBookings.has(dateStr);
-
-    const el = document.createElement('div');
-    el.className = 'cal-day';
-    if (isPast || isWeekend || !state.room) el.classList.add('disabled');
-    if (isToday)    el.classList.add('today');
-    if (isSelected) el.classList.add('selected');
-
-    el.innerHTML = toAr(d);
-
-    if (hasBookings && !isWeekend) {
-      const dot = document.createElement('div');
-      dot.className = 'cal-dot';
-      el.appendChild(dot);
-    }
-
-    if (!isPast && !isWeekend && state.room) {
-      el.addEventListener('click', () => selectDate(dateStr));
-      el.style.cursor = 'pointer';
-    }
-
+  for(let d=1;d<=daysInMonth;d++){
+    const date=new Date(state.calYear,state.calMonth,d);
+    const dow=date.getDay();
+    const isPast=date<today; const isWeekend=dow===5||dow===6;
+    const dateStr=`${state.calYear}-${pad(state.calMonth+1)}-${pad(d)}`;
+    const isToday=date.getTime()===today.getTime();
+    const isSelected=dateStr===state.date;
+    const hasBookings=state.datesWithBookings.has(dateStr);
+    const el=document.createElement('div');
+    el.className='cal-day';
+    if(isPast||isWeekend||!state.room) el.classList.add('disabled');
+    if(isToday) el.classList.add('today');
+    if(isSelected) el.classList.add('selected');
+    el.innerHTML=currentLang==='en'?String(d):toAr(d);
+    if(hasBookings&&!isWeekend){const dot=document.createElement('div');dot.className='cal-dot';el.appendChild(dot);}
+    if(!isPast&&!isWeekend&&state.room){el.addEventListener('click',()=>selectDate(dateStr));el.style.cursor='pointer';}
     grid.appendChild(el);
   }
 }
 
 async function selectDate(dateStr) {
-  if (!state.room) return;
-  state.date = dateStr;
-  state.startTime = null;
-  state.endTime = null;
+  if(!state.room) return;
+  state.date=dateStr; state.startTime=null; state.endTime=null;
   renderCalendar();
-
   try {
-    const res = await fetch(`/api/bookings?room=${state.room}&date=${dateStr}`);
-    state.bookingsForDate = await res.json();
-  } catch(e) {
-    state.bookingsForDate = [];
-  }
-
-  document.getElementById('timeHint').style.display = 'none';
-  const tp = document.getElementById('timePicker');
-  tp.classList.add('unlocked');
-  renderStartList();
-  renderEndList();
+    const res=await fetch(`/api/bookings?room=${state.room}&date=${dateStr}`);
+    state.bookingsForDate=await res.json();
+  } catch(e){ state.bookingsForDate=[]; }
+  document.getElementById('timeHint').style.display='none';
+  document.getElementById('timePicker').classList.add('unlocked');
+  renderStartList(); renderEndList();
 }
 
 /* ─── Time Picker ─── */
-const ALL_SLOTS = [];
-for (let m = 7*60; m <= 15*60; m += 30) ALL_SLOTS.push(minToTime(m));
+const ALL_SLOTS=[];
+for(let m=7*60;m<=15*60;m+=30) ALL_SLOTS.push(minToTime(m));
 
 function resetTimePicker() {
-  state.startTime = null;
-  state.endTime = null;
-  state.bookingsForDate = [];
-  document.getElementById('timeHint').style.display = 'block';
+  state.startTime=null; state.endTime=null; state.bookingsForDate=[];
+  document.getElementById('timeHint').style.display='block';
   document.getElementById('timePicker').classList.remove('unlocked');
-  document.getElementById('startList').innerHTML = '';
-  document.getElementById('endList').innerHTML = '<div style="font-size:0.8rem;color:var(--muted);padding:12px;text-align:center;">اختر وقت البداية أولاً</div>';
-  document.getElementById('durationBar').style.display = 'none';
+  document.getElementById('startList').innerHTML='';
+  document.getElementById('endList').innerHTML=`<div id="endListHint" style="font-size:.8rem;color:var(--muted);padding:12px;text-align:center;">${t('p1.end_hint')}</div>`;
+  document.getElementById('durationBar').style.display='none';
 }
 
-function isSlotBooked30(slotTime) {
-  const sm = timeToMin(slotTime);
-  const em = sm + 30;
-  const st = minToTime(sm), et = minToTime(em);
-  return state.bookingsForDate.some(b => overlap(st, et, b.start_time, b.end_time));
+function isSlotBooked30(slotTime){
+  const sm=timeToMin(slotTime),em=sm+30,st=minToTime(sm),et=minToTime(em);
+  return state.bookingsForDate.some(b=>overlap(st,et,b.start_time,b.end_time));
+}
+function wouldOverlap(startT,endT){
+  return state.bookingsForDate.some(b=>overlap(startT,endT,b.start_time,b.end_time));
 }
 
-function wouldOverlap(startT, endT) {
-  return state.bookingsForDate.some(b => overlap(startT, endT, b.start_time, b.end_time));
-}
-
-function renderStartList() {
-  const list = document.getElementById('startList');
-  list.innerHTML = '';
-  ALL_SLOTS.filter(t => timeToMin(t) <= 14*60+30).forEach(t => {
-    const booked = isSlotBooked30(t);
-    const el = document.createElement('div');
-    el.className = 'time-slot' + (booked ? ' booked' : '') + (state.startTime === t ? ' selected' : '');
-    el.innerHTML = `
-      <span class="slot-time">${t}</span>
-      <span class="slot-badge ${booked ? 'badge-booked' : 'badge-avail'}">${booked ? 'محجوز' : 'متاح'}</span>
-    `;
-    if (!booked) {
-      el.addEventListener('click', () => {
-        state.startTime = t;
-        state.endTime = null;
-        renderStartList();
-        renderEndList();
-        document.getElementById('durationBar').style.display = 'none';
-      });
-    }
+function renderStartList(){
+  const list=document.getElementById('startList'); list.innerHTML='';
+  ALL_SLOTS.filter(t2=>timeToMin(t2)<=14*60+30).forEach(t2=>{
+    const booked=isSlotBooked30(t2);
+    const el=document.createElement('div');
+    el.className='time-slot'+(booked?' booked':'')+(state.startTime===t2?' selected':'');
+    el.innerHTML=`<span class="slot-time">${t2}</span><span class="slot-badge ${booked?'badge-booked':'badge-avail'}">${booked?t('slot.booked'):t('slot.available')}</span>`;
+    if(!booked){el.addEventListener('click',()=>{state.startTime=t2;state.endTime=null;renderStartList();renderEndList();document.getElementById('durationBar').style.display='none';});}
     list.appendChild(el);
   });
 }
 
-function renderEndList() {
-  const list = document.getElementById('endList');
-  if (!state.startTime) {
-    list.innerHTML = '<div style="font-size:0.8rem;color:var(--muted);padding:12px;text-align:center;">اختر وقت البداية أولاً</div>';
-    return;
-  }
-  list.innerHTML = '';
-  const startMin = timeToMin(state.startTime);
-  const maxEnd   = Math.min(startMin + 120, 15*60);
-
-  for (let m = startMin + 30; m <= maxEnd; m += 30) {
-    const t = minToTime(m);
-    const durMins = m - startMin;
-    const wouldConflict = wouldOverlap(state.startTime, t);
-    const el = document.createElement('div');
-    el.className = 'time-slot' + (wouldConflict ? ' booked' : '') + (state.endTime === t ? ' selected' : '');
-    el.innerHTML = `
-      <span class="slot-time">${t}</span>
-      <span class="slot-badge ${wouldConflict ? 'badge-booked' : 'badge-dur'}">${wouldConflict ? 'محجوز' : formatDuration(durMins)}</span>
-    `;
-    if (!wouldConflict) {
-      el.addEventListener('click', () => {
-        state.endTime = t;
-        renderEndList();
-        updateDurationBar();
-      });
-    }
+function renderEndList(){
+  const list=document.getElementById('endList');
+  if(!state.startTime){list.innerHTML=`<div style="font-size:.8rem;color:var(--muted);padding:12px;text-align:center;">${t('p1.end_hint')}</div>`;return;}
+  list.innerHTML='';
+  const startMin=timeToMin(state.startTime),maxEnd=Math.min(startMin+120,15*60);
+  for(let m=startMin+30;m<=maxEnd;m+=30){
+    const t2=minToTime(m),durMins=m-startMin,conflict=wouldOverlap(state.startTime,t2);
+    const el=document.createElement('div');
+    el.className='time-slot'+(conflict?' booked':'')+(state.endTime===t2?' selected':'');
+    el.innerHTML=`<span class="slot-time">${t2}</span><span class="slot-badge ${conflict?'badge-booked':'badge-dur'}">${conflict?t('slot.booked'):formatDuration(durMins)}</span>`;
+    if(!conflict){el.addEventListener('click',()=>{state.endTime=t2;renderEndList();updateDurationBar();});}
     list.appendChild(el);
   }
 }
 
-function updateDurationBar() {
-  const bar = document.getElementById('durationBar');
-  if (!state.startTime || !state.endTime) { bar.style.display='none'; return; }
-  const dur = timeToMin(state.endTime) - timeToMin(state.startTime);
-  bar.style.display = 'block';
-  bar.innerHTML = `مدة الاجتماع: <strong>${formatDuration(dur)}</strong> · ${state.startTime} — ${state.endTime}`;
+function updateDurationBar(){
+  const bar=document.getElementById('durationBar');
+  if(!state.startTime||!state.endTime){bar.style.display='none';return;}
+  const dur=timeToMin(state.endTime)-timeToMin(state.startTime);
+  bar.style.display='block';
+  const durLabel = currentLang==='en' ? 'Duration' : 'مدة الاجتماع';
+  bar.innerHTML=`${durLabel}: <strong>${formatDuration(dur)}</strong> · ${state.startTime} — ${state.endTime}`;
 }
 
 /* ─── Services ─── */
-function toggleService(key, el) {
-  if (state.services.includes(key)) {
-    state.services = state.services.filter(s => s !== key);
-    el.classList.remove('selected');
-  } else {
-    state.services.push(key);
-    el.classList.add('selected');
-  }
+function toggleService(key,el){
+  if(state.services.includes(key)){state.services=state.services.filter(s=>s!==key);el.classList.remove('selected');}
+  else{state.services.push(key);el.classList.add('selected');}
 }
 
 /* ─── Department ─── */
-function handleDeptChange() {
-  const val = document.getElementById('fDept').value;
-  const otherInput = document.getElementById('fDeptOther');
-  otherInput.style.display = val === '__other__' ? 'block' : 'none';
-  if (val !== '__other__') otherInput.value = '';
+function handleDeptChange(){
+  const val=document.getElementById('fDept').value;
+  const other=document.getElementById('fDeptOther');
+  other.style.display=val==='__other__'?'block':'none';
+  if(val!=='__other__') other.value='';
 }
 
 /* ─── Step Guards ─── */
-function goStep2() {
-  document.getElementById('conflictAlert').style.display = 'none';
-  if (!state.date)      { alert('الرجاء اختيار التاريخ'); return; }
-  if (!state.startTime) { alert('الرجاء اختيار وقت البداية'); return; }
-  if (!state.endTime)   { alert('الرجاء اختيار وقت النهاية'); return; }
+function goStep2(){
+  document.getElementById('conflictAlert').style.display='none';
+  if(!state.date){alert(t('err.date'));return;}
+  if(!state.startTime){alert(t('err.start'));return;}
+  if(!state.endTime){alert(t('err.end'));return;}
   showStep(2);
 }
+function goStep3(){ showStep(3); }
 
-function goStep3() {
-  showStep(3);
+function goStep4(){
+  const name=document.getElementById('fName').value.trim();
+  const empId=document.getElementById('fEmpId').value.trim();
+  const deptSel=document.getElementById('fDept').value;
+  const subject=document.getElementById('fSubject').value.trim();
+  const email=document.getElementById('fEmail').value.trim();
+  const phone=document.getElementById('fPhone').value.trim();
+  const notes=document.getElementById('fNotes').value.trim();
+
+  if(!name){alert(t('err.name'));return;}
+  if(!empId){alert(t('err.empid'));return;}
+  if(!deptSel){alert(t('err.dept'));return;}
+  let dept=deptSel;
+  if(deptSel==='__other__'){dept=document.getElementById('fDeptOther').value.trim();if(!dept){alert(t('err.dept_other'));return;}}
+  if(!subject){alert(t('err.subject'));return;}
+  if(!email){alert(t('err.email'));return;}
+
+  state.name=name; state.empId=empId; state.dept=dept;
+  state.subject=subject; state.email=email; state.phone=phone; state.notes=notes;
+
+  buildReviewTable(); showStep(4);
 }
 
-function goStep4() {
-  const name    = document.getElementById('fName').value.trim();
-  const empId   = document.getElementById('fEmpId').value.trim();
-  const deptSel = document.getElementById('fDept').value;
-  const subject = document.getElementById('fSubject').value.trim();
-  const email   = document.getElementById('fEmail').value.trim();
-  const phone   = document.getElementById('fPhone').value.trim();
-  const notes   = document.getElementById('fNotes').value.trim();
-
-  if (!name)  { alert('الرجاء إدخال الاسم الكامل'); return; }
-  if (!empId) { alert('الرجاء إدخال رقمك الوظيفي'); return; }
-  if (!deptSel) { alert('الرجاء اختيار القسم'); return; }
-
-  let dept = deptSel;
-  if (deptSel === '__other__') {
-    dept = document.getElementById('fDeptOther').value.trim();
-    if (!dept) { alert('الرجاء إدخال اسم القسم'); return; }
-  }
-
-  if (!subject) { alert('الرجاء إدخال موضوع الاجتماع'); return; }
-  if (!email)   { alert('الرجاء إدخال البريد الإلكتروني'); return; }
-
-  state.name    = name;
-  state.empId   = empId;
-  state.dept    = dept;
-  state.subject = subject;
-  state.email   = email;
-  state.phone   = phone;
-  state.notes   = notes;
-
-  buildReviewTable();
-  showStep(4);
-}
-
-function buildReviewTable() {
-  const svcLabels = state.services.map(serviceLabel).join('، ') || 'لا يوجد';
-  const rows = [
-    ['القاعة',        roomLabel(state.room)],
-    ['التاريخ',       formatDateAr(state.date)],
-    ['وقت البداية',   state.startTime],
-    ['وقت النهاية',   state.endTime],
-    ['المدة',         formatDuration(timeToMin(state.endTime) - timeToMin(state.startTime))],
-    ['الخدمات',       svcLabels],
-    ['الاسم',         state.name],
-    ['رقم الوظيفي',   state.empId],
-    ['القسم',         state.dept],
-    ['الموضوع',       state.subject],
-    ['البريد',        state.email],
-    ['الهاتف',        state.phone || '—'],
-    ['ملاحظات',       state.notes || '—'],
+function buildReviewTable(){
+  const svcLabels=state.services.map(serviceLabel).join('، ')||t('no_services');
+  const rows=[
+    [t('rev.room'),    roomLabel()],
+    [t('rev.date'),    formatDate(state.date)],
+    [t('rev.start'),   state.startTime],
+    [t('rev.end'),     state.endTime],
+    [t('rev.duration'),formatDuration(timeToMin(state.endTime)-timeToMin(state.startTime))],
+    [t('rev.services'),svcLabels],
+    [t('rev.name'),    state.name],
+    [t('rev.empid'),   state.empId],
+    [t('rev.dept'),    state.dept],
+    [t('rev.subject'), state.subject],
+    [t('rev.email'),   state.email],
+    [t('rev.phone'),   state.phone||'—'],
+    [t('rev.notes'),   state.notes||'—'],
   ];
-  const tbl = document.getElementById('reviewTable');
-  tbl.innerHTML = rows.map(([k,v]) =>
-    `<tr><td>${k}</td><td>${escHtml(v)}</td></tr>`
-  ).join('');
+  document.getElementById('reviewTable').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${escHtml(v)}</td></tr>`).join('');
 }
 
 /* ─── Submit ─── */
-async function submitBooking() {
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'جارٍ الإرسال...';
-  document.getElementById('submitAlert').style.display = 'none';
+async function submitBooking(){
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent=t('btn.sending');
+  document.getElementById('submitAlert').style.display='none';
 
-  const payload = {
-    room:        state.room,
-    date:        state.date,
-    start_time:  state.startTime,
-    end_time:    state.endTime,
-    name:        state.name,
-    employee_id: state.empId,
-    department:  state.dept,
-    subject:     state.subject,
-    email:       state.email,
-    phone:       state.phone,
-    services:    state.services,
-    notes:       state.notes,
+  const payload={
+    room:state.room, date:state.date, start_time:state.startTime, end_time:state.endTime,
+    name:state.name, employee_id:state.empId, department:state.dept, subject:state.subject,
+    email:state.email, phone:state.phone, services:state.services, notes:state.notes,
   };
 
   try {
-    const res  = await fetch('/api/bookings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    const data = await res.json();
-
-    if (res.ok && data.success) {
+    const res=await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(res.ok&&data.success){
       showConfirmation(data.ref);
-    } else if (res.status === 409) {
+    } else if(res.status===409){
       showStep(1);
-      document.getElementById('conflictAlert').style.display = 'flex';
-      if (state.room && state.date) await selectDate(state.date);
-      state.startTime = null;
-      state.endTime   = null;
-      renderStartList();
-      renderEndList();
+      document.getElementById('conflictAlert').style.display='flex';
+      if(state.room&&state.date) await selectDate(state.date);
+      state.startTime=null; state.endTime=null; renderStartList(); renderEndList();
     } else {
-      const alertEl = document.getElementById('submitAlert');
-      alertEl.style.display = 'flex';
-      alertEl.innerHTML = `<span>⚠️</span><span>${data.error || 'حدث خطأ، الرجاء المحاولة مرة أخرى'}</span>`;
+      const alertEl=document.getElementById('submitAlert');
+      alertEl.style.display='flex';
+      alertEl.innerHTML=`<span>⚠️</span><span>${data.error||t('err.server')}</span>`;
     }
-  } catch(e) {
-    const alertEl = document.getElementById('submitAlert');
-    alertEl.style.display = 'flex';
-    alertEl.innerHTML = '<span>⚠️</span><span>تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.</span>';
+  } catch(e){
+    const alertEl=document.getElementById('submitAlert');
+    alertEl.style.display='flex';
+    alertEl.innerHTML=`<span>⚠️</span><span>${t('err.server')}</span>`;
   }
-
-  btn.disabled = false;
-  btn.textContent = 'تأكيد الحجز ✓';
+  btn.disabled=false; btn.textContent=t('btn.confirm');
 }
 
-function showConfirmation(ref) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const conf = document.getElementById('confirmation');
-  conf.style.display = 'block';
-  document.getElementById('confirmRef').textContent = ref;
-
-  const svcLabels = state.services.map(serviceLabel).join(' · ') || 'لا يوجد';
-  document.getElementById('confirmSummary').innerHTML = `
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:0.85rem;">
-      <span style="color:var(--muted);font-weight:600;">القاعة</span>    <span style="font-weight:700;">${roomLabel(state.room)}</span>
-      <span style="color:var(--muted);font-weight:600;">التاريخ</span>   <span style="font-weight:700;">${formatDateAr(state.date)}</span>
-      <span style="color:var(--muted);font-weight:600;">الوقت</span>     <span style="font-weight:700;">${state.startTime} — ${state.endTime}</span>
-      <span style="color:var(--muted);font-weight:600;">الاسم</span>     <span style="font-weight:700;">${escHtml(state.name)}</span>
-      <span style="color:var(--muted);font-weight:600;">الخدمات</span>   <span style="font-weight:700;">${svcLabels}</span>
-    </div>
-  `;
-  window.scrollTo({top:0, behavior:'smooth'});
+function showConfirmation(ref){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const conf=document.getElementById('confirmation');
+  conf.style.display='block';
+  document.getElementById('confirmRef').textContent=ref;
+  const svcLabels=state.services.map(serviceLabel).join(' · ')||t('no_services');
+  document.getElementById('confirmSummary').innerHTML=`
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.85rem;">
+      <span style="color:var(--muted);font-weight:600;">${t('conf.room')}</span><span style="font-weight:700;">${escHtml(roomLabel())}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('conf.date')}</span><span style="font-weight:700;">${formatDate(state.date)}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('conf.time')}</span><span style="font-weight:700;">${state.startTime} — ${state.endTime}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('conf.name')}</span><span style="font-weight:700;">${escHtml(state.name)}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('conf.services')}</span><span style="font-weight:700;">${svcLabels}</span>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function resetApp() {
-  state.step = 1;
-  state.room = 'a';
-  state.date = null;
-  state.startTime = null;
-  state.endTime = null;
-  state.services = [];
-  state.name = ''; state.empId = ''; state.dept = ''; state.subject = '';
-  state.email = ''; state.phone = ''; state.notes = '';
-  state.bookingsForDate = [];
-  state.datesWithBookings = new Set();
-  state.calYear = new Date().getFullYear();
-  state.calMonth = new Date().getMonth();
+function resetApp(){
+  state.step=1; state.date=null; state.startTime=null; state.endTime=null;
+  state.services=[]; state.name=''; state.empId=''; state.dept='';
+  state.subject=''; state.email=''; state.phone=''; state.notes='';
+  state.bookingsForDate=[]; state.datesWithBookings=new Set();
+  state.calYear=new Date().getFullYear(); state.calMonth=new Date().getMonth();
 
-  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('fName').value = '';
-  document.getElementById('fEmpId').value = '';
-  document.getElementById('fDept').value = '';
-  document.getElementById('fDeptOther').value = '';
-  document.getElementById('fDeptOther').style.display = 'none';
-  document.getElementById('fSubject').value = '';
-  document.getElementById('fEmail').value = '';
-  document.getElementById('fPhone').value = '';
-  document.getElementById('fNotes').value = '';
-  document.getElementById('conflictAlert').style.display = 'none';
-  document.getElementById('confirmation').style.display = 'none';
-
-  resetTimePicker();
-  renderCalendar();
-  showStep(1);
+  document.querySelectorAll('.service-card').forEach(c=>c.classList.remove('selected'));
+  ['fName','fEmpId','fSubject','fEmail','fPhone','fNotes','fDeptOther'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('fDept').value='';
+  document.getElementById('fDeptOther').style.display='none';
+  document.getElementById('conflictAlert').style.display='none';
+  document.getElementById('confirmation').style.display='none';
+  resetTimePicker(); renderCalendar(); showStep(1);
+  loadRoomBookingDates('a');
 }
 
 /* ─── Cancel Section ─── */
-let cancelEmployeeBookings = [];
-let selectedCancelBooking  = null;
+let cancelEmployeeBookings=[];
+let selectedCancelBooking=null;
 
-function showCancelLookup() {
-  document.getElementById('cancelLookupView').style.display  = 'block';
-  document.getElementById('cancelListView').style.display    = 'none';
-  document.getElementById('cancelSuccessView').style.display = 'none';
-  document.getElementById('cancelLookupAlert').style.display = 'none';
+function showCancelLookup(){
+  document.getElementById('cancelLookupView').style.display='block';
+  document.getElementById('cancelListView').style.display='none';
+  document.getElementById('cancelSuccessView').style.display='none';
+  document.getElementById('cancelLookupAlert').style.display='none';
 }
 
-async function lookupEmployeeBookings() {
-  const empId   = document.getElementById('cancelEmpId').value.trim();
-  const alertEl = document.getElementById('cancelLookupAlert');
-  const msgEl   = document.getElementById('cancelLookupAlertMsg');
-  const btn     = document.getElementById('cancelSearchBtn');
-
-  if (!empId) {
-    alertEl.style.display = 'flex';
-    msgEl.textContent = 'الرجاء إدخال رقمك الوظيفي';
-    return;
-  }
-
-  alertEl.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'جارٍ البحث...';
-
+async function lookupEmployeeBookings(){
+  const empId=document.getElementById('cancelEmpId').value.trim();
+  const alertEl=document.getElementById('cancelLookupAlert');
+  const msgEl=document.getElementById('cancelLookupAlertMsg');
+  const btn=document.getElementById('cancelSearchBtn');
+  if(!empId){alertEl.style.display='flex';msgEl.textContent=t('cancel.err_empid');return;}
+  alertEl.style.display='none';
+  btn.disabled=true; btn.textContent=t('cancel.searching');
   try {
-    const res  = await fetch(`/api/bookings/by-employee/${encodeURIComponent(empId)}`);
-    const data = await res.json();
-    cancelEmployeeBookings = data;
+    const res=await fetch(`/api/bookings/by-employee/${encodeURIComponent(empId)}`);
+    cancelEmployeeBookings=await res.json();
     showCancelList(empId);
-  } catch(e) {
-    alertEl.style.display = 'flex';
-    msgEl.textContent = 'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'بحث ←';
-  }
+  } catch(e){alertEl.style.display='flex';msgEl.textContent=t('cancel.err_server');}
+  finally{btn.disabled=false; btn.textContent=t('cancel.search');}
 }
 
-function showCancelList(empId) {
-  document.getElementById('cancelLookupView').style.display = 'none';
-  document.getElementById('cancelListView').style.display   = 'block';
-
-  const today    = new Date().toISOString().slice(0, 10);
-  const upcoming = cancelEmployeeBookings.filter(b => b.date >= today);
-  cancelEmployeeBookings = upcoming;
-
-  document.getElementById('cancelListSubtitle').textContent =
-    `رقم الوظيفي: ${empId} · ${upcoming.length} حجز قادم`;
-
-  const content = document.getElementById('cancelBookingsContent');
-
-  if (upcoming.length === 0) {
-    content.innerHTML = `
-      <div style="text-align:center;padding:36px 24px;color:var(--muted);">
-        <div style="font-size:2.2rem;margin-bottom:10px;">📅</div>
-        <div style="font-weight:600;">لا توجد حجوزات قادمة مرتبطة بهذا الرقم الوظيفي</div>
-      </div>`;
+function showCancelList(empId){
+  document.getElementById('cancelLookupView').style.display='none';
+  document.getElementById('cancelListView').style.display='block';
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=cancelEmployeeBookings.filter(b=>b.date>=today);
+  cancelEmployeeBookings=upcoming;
+  document.getElementById('cancelListSubtitle').textContent=
+    currentLang==='en'
+      ? `Employee ID: ${empId} · ${upcoming.length} upcoming booking(s)`
+      : `رقم الوظيفي: ${empId} · ${upcoming.length} حجز قادم`;
+  const content=document.getElementById('cancelBookingsContent');
+  if(upcoming.length===0){
+    content.innerHTML=`<div style="text-align:center;padding:36px 24px;color:var(--muted);"><div style="font-size:2.2rem;margin-bottom:10px;">📅</div><div style="font-weight:600;">${t('cancel.no_bookings')}</div></div>`;
     return;
   }
-
-  content.innerHTML = upcoming.map((b, i) => `
+  content.innerHTML=upcoming.map((b,i)=>`
     <div style="padding:14px 0;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
       <div>
-        <div style="font-weight:700;color:var(--blue-dark);font-size:0.95rem;">${escHtml(b.subject || '—')}</div>
-        <div style="font-size:0.82rem;color:var(--muted);margin-top:3px;">${formatDateAr(b.date)} · ${b.start_time}–${b.end_time}</div>
-        <div style="font-size:0.78rem;color:var(--slate);margin-top:2px;direction:ltr;">${escHtml(b.ref || '')}</div>
+        <div style="font-weight:700;color:var(--blue-dark);font-size:.95rem;">${escHtml(b.subject||'—')}</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-top:3px;">${formatDate(b.date)} · ${b.start_time}–${b.end_time}</div>
+        <div style="font-size:.78rem;color:var(--slate);margin-top:2px;direction:ltr;">${escHtml(b.ref||'')}</div>
       </div>
-      <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">طلب إلغاء</button>
-    </div>
-  `).join('');
+      <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">${t('cancel.req_btn')}</button>
+    </div>`).join('');
 }
 
-// Placeholder — kept so old calls don't crash
-function cancelPrevMonth() {}
-function cancelNextMonth() {}
-function renderCancelCalendar() {}
-function loadCancelCalendar() {}
-
-function cancelPrevMonth() {
-  cancelCalMonth--;
-  if (cancelCalMonth < 0) { cancelCalMonth = 11; cancelCalYear--; }
-  renderCancelCalendar();
-}
-
-function cancelNextMonth() {
-  cancelCalMonth++;
-  if (cancelCalMonth > 11) { cancelCalMonth = 0; cancelCalYear++; }
-  renderCancelCalendar();
-}
-
-function renderCancelCalendar() {
-  document.getElementById('cancelMonthLabel').textContent =
-    AR_MONTHS[cancelCalMonth] + ' ' + toAr(cancelCalYear);
-
-  // Day headers
-  const headersEl = document.getElementById('cancelCalHeaders');
-  headersEl.innerHTML = '';
-  AR_DAYS.forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'sec-cal-day-header';
-    el.textContent = d;
-    headersEl.appendChild(el);
-  });
-
-  const grid = document.getElementById('cancelCalGrid');
-  grid.innerHTML = '';
-
-  const todayStr = `${new Date().getFullYear()}-${pad(new Date().getMonth()+1)}-${pad(new Date().getDate())}`;
-  const firstDow = new Date(cancelCalYear, cancelCalMonth, 1).getDay();
-  const daysInMonth = new Date(cancelCalYear, cancelCalMonth+1, 0).getDate();
-
-  const monthPrefix = `${cancelCalYear}-${pad(cancelCalMonth+1)}`;
-  const byDate = {};
-  allBookingsForCancel.forEach(b => {
-    if (b.date && b.date.startsWith(monthPrefix)) {
-      if (!byDate[b.date]) byDate[b.date] = [];
-      byDate[b.date].push(b);
-    }
-  });
-
-  for (let i = 0; i < firstDow; i++) {
-    const el = document.createElement('div');
-    el.className = 'sec-cal-cell';
-    grid.appendChild(el);
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(cancelCalYear, cancelCalMonth, d);
-    const dow  = date.getDay();
-    const dateStr   = `${cancelCalYear}-${pad(cancelCalMonth+1)}-${pad(d)}`;
-    const isToday   = dateStr === todayStr;
-    const isWeekend = dow === 5 || dow === 6;
-
-    const cell = document.createElement('div');
-    cell.className = 'sec-cal-cell' + (isWeekend ? ' disabled-day' : '') + (isToday ? ' today' : '');
-
-    const numEl = document.createElement('div');
-    numEl.className = 'sec-cal-num';
-    numEl.textContent = toAr(d);
-    cell.appendChild(numEl);
-
-    const dayBookings = byDate[dateStr] || [];
-    dayBookings.forEach(b => {
-      const r = (b.room || '').toLowerCase();
-      const chip = document.createElement('div');
-      chip.className = `booking-chip chip-${r}`;
-      chip.title = `${b.name} · ${b.start_time}–${b.end_time}`;
-      chip.innerHTML = `<span class="chip-room">${(r||'?').toUpperCase()}</span>${escHtml(b.name||'')} ${b.start_time}`;
-      chip.addEventListener('click', () => openCancelModal(b));
-      cell.appendChild(chip);
-    });
-
-    grid.appendChild(cell);
-  }
-}
-
-function openCancelModal(idx) {
-  const booking = cancelEmployeeBookings[idx];
-  if (!booking) return;
-  selectedCancelBooking = booking;
-
-  document.getElementById('cancelModalBody').innerHTML = `
+function openCancelModal(idx){
+  const booking=cancelEmployeeBookings[idx];
+  if(!booking) return;
+  selectedCancelBooking=booking;
+  document.getElementById('cancelModalBody').innerHTML=`
     <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:14px;margin-bottom:16px;">
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
-        <div class="detail-key">رقم المرجع</div>
+        <div class="detail-key">${t('cancel.ref')}</div>
         <div class="detail-val" style="direction:ltr;">${escHtml(booking.ref||'')}</div>
       </div>
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
-        <div class="detail-key">الاسم</div>
+        <div class="detail-key">${t('cancel.booking_name')}</div>
         <div class="detail-val">${escHtml(booking.name||'')}</div>
       </div>
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
-        <div class="detail-key">التاريخ</div>
-        <div class="detail-val">${formatDateAr(booking.date)}</div>
+        <div class="detail-key">${t('cancel.booking_date')}</div>
+        <div class="detail-val">${formatDate(booking.date)}</div>
       </div>
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
-        <div class="detail-key">الوقت</div>
+        <div class="detail-key">${t('cancel.booking_time')}</div>
         <div class="detail-val" style="direction:ltr;">${booking.start_time} – ${booking.end_time}</div>
       </div>
       <div class="detail-row" style="padding:6px 0;">
-        <div class="detail-key">الموضوع</div>
+        <div class="detail-key">${t('cancel.booking_subject')}</div>
         <div class="detail-val">${escHtml(booking.subject||'—')}</div>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">سبب الإلغاء (اختياري)</label>
-      <textarea class="form-textarea" id="cancelReason" placeholder="اذكر سبب طلب الإلغاء إن أردت..." style="min-height:70px;"></textarea>
+      <label class="form-label">${t('cancel.reason_label')}</label>
+      <textarea class="form-textarea" id="cancelReason" placeholder="${t('cancel.reason_ph')}" style="min-height:70px;"></textarea>
     </div>
-    <div id="cancelModalAlert" style="display:none;"></div>
-  `;
-
-  document.getElementById('cancelSubmitBtn').disabled = false;
-  document.getElementById('cancelSubmitBtn').textContent = 'إرسال طلب الإلغاء';
+    <div id="cancelModalAlert" style="display:none;"></div>`;
+  document.getElementById('cancelSubmitBtn').disabled=false;
+  document.getElementById('cancelSubmitBtn').textContent=t('cancel.submit');
   document.getElementById('cancelModalOverlay').classList.add('open');
 }
 
-function closeCancelModal() {
+function closeCancelModal(){
   document.getElementById('cancelModalOverlay').classList.remove('open');
-  selectedCancelBooking = null;
+  selectedCancelBooking=null;
 }
+function handleCancelOverlayClick(e){ if(e.target===document.getElementById('cancelModalOverlay')) closeCancelModal(); }
 
-function handleCancelOverlayClick(e) {
-  if (e.target === document.getElementById('cancelModalOverlay')) closeCancelModal();
-}
-
-async function submitCancelRequest() {
-  if (!selectedCancelBooking) return;
-
-  const btn     = document.getElementById('cancelSubmitBtn');
-  const alertEl = document.getElementById('cancelModalAlert');
-  const reason  = document.getElementById('cancelReason').value.trim();
-
-  btn.disabled = true;
-  btn.textContent = 'جارٍ الإرسال...';
-  alertEl.style.display = 'none';
-
+async function submitCancelRequest(){
+  if(!selectedCancelBooking) return;
+  const btn=document.getElementById('cancelSubmitBtn');
+  const alertEl=document.getElementById('cancelModalAlert');
+  const reason=document.getElementById('cancelReason').value.trim();
+  btn.disabled=true; btn.textContent=t('cancel.submitting');
+  alertEl.style.display='none';
   try {
-    const res = await fetch('/api/cancel-requests', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        booking_id:     selectedCancelBooking.id,
-        requester_name: selectedCancelBooking.name,
-        reason:         reason || null,
-      })
-    });
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      const bookingSnap = { ...selectedCancelBooking };
-      closeCancelModal();
-      showCancelSuccess(bookingSnap);
+    const res=await fetch('/api/cancel-requests',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({booking_id:selectedCancelBooking.id,requester_name:selectedCancelBooking.name,reason:reason||null})});
+    const data=await res.json();
+    if(res.ok&&data.success){
+      const snap={...selectedCancelBooking}; closeCancelModal(); showCancelSuccess(snap);
     } else {
-      alertEl.className = 'alert alert-danger';
-      alertEl.style.display = 'flex';
-      alertEl.innerHTML = `<span>⚠️</span><span>${data.error || 'حدث خطأ، الرجاء المحاولة مرة أخرى'}</span>`;
-      btn.disabled = false;
-      btn.textContent = 'إرسال طلب الإلغاء';
+      alertEl.className='alert alert-danger'; alertEl.style.display='flex';
+      alertEl.innerHTML=`<span>⚠️</span><span>${data.error||t('err.server')}</span>`;
+      btn.disabled=false; btn.textContent=t('cancel.submit');
     }
-  } catch(e) {
-    alertEl.className = 'alert alert-danger';
-    alertEl.style.display = 'flex';
-    alertEl.innerHTML = '<span>⚠️</span><span>تعذّر الاتصال بالخادم</span>';
-    btn.disabled = false;
-    btn.textContent = 'إرسال طلب الإلغاء';
+  } catch(e){
+    alertEl.className='alert alert-danger'; alertEl.style.display='flex';
+    alertEl.innerHTML=`<span>⚠️</span><span>${t('cancel.err_server')}</span>`;
+    btn.disabled=false; btn.textContent=t('cancel.submit');
   }
 }
 
-function showCancelSuccess(booking) {
-  document.getElementById('cancelListView').style.display    = 'none';
-  document.getElementById('cancelSuccessView').style.display = 'block';
-
-  document.getElementById('cancelSuccessSummary').innerHTML = `
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:0.85rem;">
-      <span style="color:var(--muted);font-weight:600;">رقم الحجز</span><span style="font-weight:700;direction:ltr;">${escHtml(booking.ref||'')}</span>
-      <span style="color:var(--muted);font-weight:600;">التاريخ</span><span style="font-weight:700;">${formatDateAr(booking.date)}</span>
-      <span style="color:var(--muted);font-weight:600;">الوقت</span><span style="font-weight:700;direction:ltr;">${booking.start_time} – ${booking.end_time}</span>
-      <span style="color:var(--muted);font-weight:600;">الموضوع</span><span style="font-weight:700;">${escHtml(booking.subject||'')}</span>
-    </div>
-  `;
-  window.scrollTo({top:0, behavior:'smooth'});
+function showCancelSuccess(booking){
+  document.getElementById('cancelListView').style.display='none';
+  document.getElementById('cancelSuccessView').style.display='block';
+  document.getElementById('cancelSuccessSummary').innerHTML=`
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.85rem;">
+      <span style="color:var(--muted);font-weight:600;">${t('cancel.ref')}</span><span style="font-weight:700;direction:ltr;">${escHtml(booking.ref||'')}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('cancel.booking_date')}</span><span style="font-weight:700;">${formatDate(booking.date)}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('cancel.booking_time')}</span><span style="font-weight:700;direction:ltr;">${booking.start_time} – ${booking.end_time}</span>
+      <span style="color:var(--muted);font-weight:600;">${t('cancel.booking_subject')}</span><span style="font-weight:700;">${escHtml(booking.subject||'')}</span>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ─── Init ─── */
 loadRoomBookingDates('a');
 renderCalendar();
+applyTranslations();
 </script>
 </body>
 </html>
