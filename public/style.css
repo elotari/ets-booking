@@ -33,8 +33,13 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
-button { font-family: 'Cairo', sans-serif; cursor: pointer; border: none; outline: none; }
+button { font-family: 'Cairo', sans-serif; cursor: pointer; border: none; outline: none; touch-action: manipulation; }
 input, select, textarea { font-family: 'Cairo', sans-serif; }
+
+/* Prevent iOS text size inflation */
+@media (max-width: 768px) {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+}
 
 /* ─── Layout ─── */
 .page-wrapper {
@@ -255,6 +260,7 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   border-radius: 12px;
   padding: 14px;
   cursor: pointer;
+  touch-action: manipulation;
   transition: border-color 0.18s, box-shadow 0.18s, transform 0.1s;
   position: relative;
   background: var(--blue-tint2);
@@ -335,10 +341,13 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   background: var(--blue-tint);
   border: 2px solid var(--border);
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 1rem;
   color: var(--blue-mid);
   cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+  min-width: 44px;
   transition: background 0.15s;
 }
 
@@ -368,6 +377,7 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background 0.15s, color 0.15s;
   position: relative;
   padding: 4px;
@@ -439,6 +449,8 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   border: 1.5px solid var(--border-light);
   border-radius: 8px;
   cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
   transition: all 0.15s;
   background: var(--white);
 }
@@ -511,6 +523,7 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   border-radius: 12px;
   padding: 20px 16px;
   cursor: pointer;
+  touch-action: manipulation;
   transition: all 0.18s;
   background: var(--blue-tint2);
   text-align: center;
@@ -1216,14 +1229,120 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
 .badge-rejected { background: #fdf0f0; color: var(--danger); border: 1.5px solid #f5c6cb; }
 
 /* ─── Responsive ─── */
-@media (max-width: 640px) {
-  .rooms-grid              { grid-template-columns: 1fr; }
-  .time-picker-container   { grid-template-columns: 1fr; }
-  .services-grid           { grid-template-columns: 1fr 1fr; }
-  .form-grid               { grid-template-columns: 1fr; }
-  .stats-bar               { grid-template-columns: 1fr; }
-  .drawer                  { width: 100%; right: -100%; }
 
-  .bookings-table th:nth-child(n+6),
-  .bookings-table td:nth-child(n+6) { display: none; }
+/* ── Tablet (≤ 768px) ── */
+@media (max-width: 768px) {
+  .page-wrapper { padding: 16px 14px 52px; }
+
+  .sec-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px;
+  }
+
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+
+  .sec-cal-cell   { min-height: 72px; }
+  .booking-chip   { font-size: 0.58rem; padding: 1px 4px; }
+
+  .bookings-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .bookings-table      { min-width: 600px; }
+}
+
+/* ── Phone (≤ 640px) ── */
+@media (max-width: 640px) {
+  .page-wrapper { padding: 12px 10px 44px; }
+
+  /* Step bar */
+  .step-bar   { padding: 0 6px; }
+  .step-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 0.78rem;
+  }
+  .step-item:not(:last-child)::before { top: 15px; }
+  .step-label { font-size: 0.64rem; }
+
+  /* Cards */
+  .card-header  { padding: 14px 16px; }
+  .card-section { padding: 14px 14px; }
+
+  /* Button strip — stack vertically on phones */
+  .btn-strip {
+    padding: 12px 14px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .btn-strip .btn-primary,
+  .btn-strip .btn-ghost {
+    width: 100%;
+    padding: 13px 16px;
+    text-align: center;
+  }
+
+  /* Room grid — 2 columns so rooms fit side by side */
+  .rooms-grid            { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .room-card             { padding: 10px; }
+  .room-card svg         { height: 88px; }
+  .room-name             { font-size: 0.8rem; }
+
+  /* Time picker */
+  .time-picker-container { grid-template-columns: 1fr; }
+
+  /* Services */
+  .services-grid         { grid-template-columns: 1fr 1fr; }
+
+  /* Form */
+  .form-grid             { grid-template-columns: 1fr; }
+
+  /* Calendar */
+  .cal-day        { font-size: 0.78rem; border-radius: 6px; }
+  .cal-day-header { font-size: 0.64rem; }
+  .calendar-grid  { gap: 2px; }
+
+  /* Confirmation */
+  .confirm-screen { padding: 32px 14px; }
+
+  /* Mode tabs */
+  .mode-tab { padding: 12px 8px; font-size: 0.85rem; }
+
+  /* ── Secretary ── */
+  .stats-bar { grid-template-columns: 1fr; }
+
+  /* Secretary calendar */
+  .sec-cal-cell       { min-height: 52px; padding: 3px; }
+  .booking-chip       { font-size: 0.52rem; padding: 1px 3px; gap: 2px; margin-bottom: 2px; }
+  .chip-room          { font-size: 0.56rem; }
+  .sec-cal-day-header { font-size: 0.6rem; padding: 5px 2px; }
+  .sec-cal-num        { font-size: 0.66rem; }
+
+  /* Booking table — horizontal scroll */
+  .bookings-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .bookings-table      { min-width: 520px; }
+  .bookings-table th:nth-child(n+5),
+  .bookings-table td:nth-child(n+5) { display: none; }
+
+  /* Drawer */
+  .drawer { width: 100%; right: -100%; }
+
+  /* Cancel request cards — stack actions under info */
+  .cr-card    { grid-template-columns: 1fr; gap: 8px; }
+  .cr-actions { flex-direction: row; min-width: unset; flex-wrap: wrap; }
+  .cr-actions > * { flex: 1 1 auto; }
+}
+
+/* ── Very small phones (≤ 390px) ── */
+@media (max-width: 390px) {
+  html { font-size: 15px; }
+
+  .step-label    { font-size: 0.58rem; }
+  .rooms-grid    { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+
+  .mode-tab { font-size: 0.78rem; padding: 10px 4px; }
+
+  .sec-cal-cell { min-height: 42px; }
+  .booking-chip { font-size: 0.48rem; padding: 1px 2px; }
+  .chip-room    { display: none; }
 }
