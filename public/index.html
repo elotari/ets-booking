@@ -18,13 +18,13 @@
 
     /* ── Landing Page ── */
     #landingPage {
-      position: fixed; inset: 0;
+      position: fixed; inset: 0; overflow: hidden;
       background: linear-gradient(160deg, #061826 0%, #0f2a4a 45%, #1a4f8a 100%);
       display: flex; align-items: center; justify-content: center;
       z-index: 9999; transition: opacity 0.55s ease;
     }
     #landingPage.fade-out { opacity: 0; pointer-events: none; }
-    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 460px; width: 100%; }
+    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 460px; width: 100%; position: relative; z-index: 1; }
     .landing-badge {
       display: inline-block;
       background: rgba(232,160,0,.14); border: 1.5px solid rgba(232,160,0,.45);
@@ -80,6 +80,9 @@
      LANDING PAGE
 ══════════════════════════════════════ -->
 <div id="landingPage">
+  <div class="landing-orb landing-orb-1"></div>
+  <div class="landing-orb landing-orb-2"></div>
+  <div class="landing-orb landing-orb-3"></div>
   <button class="landing-lang-btn" id="landingLangBtn" onclick="toggleLang()">EN</button>
   <div class="landing-wrap">
     <div class="landing-badge">ETS Smart System</div>
@@ -554,7 +557,10 @@ function enterSystem() {
   landing.classList.add('fade-out');
   setTimeout(() => {
     landing.style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
+    const mainApp = document.getElementById('mainApp');
+    mainApp.style.display = 'block';
+    mainApp.classList.add('app-enter');
+    setTimeout(() => mainApp.classList.remove('app-enter'), 700);
   }, 580);
 }
 
@@ -633,9 +639,12 @@ function switchMode(mode) {
 
 /* ─── Step Navigation ─── */
 function showStep(n) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panel = document.getElementById('panel-'+n);
-  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active', 'panel-entering'));
+  const panel = document.getElementById('panel-' + n);
+  if (panel) {
+    panel.classList.add('active', 'panel-entering');
+    setTimeout(() => panel.classList.remove('panel-entering'), 400);
+  }
   document.getElementById('confirmation').style.display = 'none';
   state.step = n;
   updateStepBar();
@@ -645,9 +654,17 @@ function showStep(n) {
 function updateStepBar() {
   document.querySelectorAll('.step-item').forEach(el => {
     const s = parseInt(el.dataset.step);
-    el.classList.remove('active','done');
-    if (s===state.step) el.classList.add('active');
-    else if (s<state.step) el.classList.add('done');
+    el.classList.remove('active', 'done');
+    const circle = el.querySelector('.step-circle');
+    if (s === state.step) {
+      el.classList.add('active');
+      circle.classList.remove('popping');
+      void circle.offsetWidth;
+      circle.classList.add('popping');
+      setTimeout(() => circle.classList.remove('popping'), 420);
+    } else if (s < state.step) {
+      el.classList.add('done');
+    }
   });
 }
 
@@ -876,10 +893,16 @@ async function submitBooking(){
 }
 
 function showConfirmation(ref){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active','panel-entering'));
   const conf=document.getElementById('confirmation');
   conf.style.display='block';
   document.getElementById('confirmRef').textContent=ref;
+  // Restart celebrate animations
+  const icon=conf.querySelector('.confirm-icon');
+  const refEl=document.getElementById('confirmRef');
+  [icon,'celebrating'],[refEl,'revealing'].forEach(([el,cls])=>{
+    el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  });
   const svcLabels=state.services.map(serviceLabel).join(' · ')||t('no_services');
   document.getElementById('confirmSummary').innerHTML=`
     <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.85rem;">
@@ -1047,6 +1070,11 @@ function showCancelSuccess(booking){
 loadRoomBookingDates('a');
 renderCalendar();
 applyTranslations();
+// Float the landing icon after entrance animation finishes
+setTimeout(() => {
+  const icon = document.querySelector('.landing-icon');
+  if (icon) icon.classList.add('floating');
+}, 950);
 </script>
 </body>
 </html>

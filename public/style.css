@@ -1228,7 +1228,189 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
 .badge-approved { background: #eaf7f0; color: var(--success); border: 1.5px solid #b0dcca; }
 .badge-rejected { background: #fdf0f0; color: var(--danger); border: 1.5px solid #f5c6cb; }
 
-/* ─── Responsive ─── */
+/* ─── Animations & Motion ─── */
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.55); }
+  65%  { transform: scale(1.14); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes stepPop {
+  0%   { transform: scale(1); }
+  42%  { transform: scale(1.38); }
+  100% { transform: scale(1); }
+}
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-13px); }
+}
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 8px 32px rgba(29,95,168,.45); }
+  50%       { box-shadow: 0 14px 52px rgba(29,95,168,.72), 0 0 0 9px rgba(29,95,168,.1); }
+}
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33%       { transform: translate(42px,-28px) scale(1.04); }
+  66%       { transform: translate(-22px,18px) scale(0.96); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50%       { transform: translate(-28px,36px) scale(1.06); }
+}
+@keyframes celebPop {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-18deg); }
+  55%  { transform: scale(1.28) rotate(9deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes refReveal {
+  from { opacity: 0; transform: scale(0.82) translateY(10px); letter-spacing: 8px; }
+  to   { opacity: 1; transform: scale(1) translateY(0); letter-spacing: 1px; }
+}
+@keyframes panelEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.65; }
+}
+@keyframes shimmerSlide {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Landing Orbs ── */
+.landing-orb { position: absolute; border-radius: 50%; pointer-events: none; will-change: transform; }
+.landing-orb-1 {
+  width: 540px; height: 540px;
+  background: radial-gradient(circle, rgba(29,95,168,.22) 0%, transparent 65%);
+  top: -200px; right: -130px;
+  animation: orbFloat1 14s ease-in-out infinite;
+}
+.landing-orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(232,160,0,.1) 0%, transparent 65%);
+  bottom: -130px; left: -90px;
+  animation: orbFloat2 10s ease-in-out infinite;
+}
+.landing-orb-3 {
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(58,130,212,.14) 0%, transparent 65%);
+  top: 52%; left: 6%;
+  animation: orbFloat1 18s ease-in-out infinite reverse;
+}
+
+/* ── Landing Entrances ── */
+.landing-lang-btn { animation: fadeSlideUp 0.5s 0.05s ease both; }
+.landing-badge    { animation: fadeSlideUp 0.5s 0.12s ease both; }
+.landing-icon     { animation: fadeSlideUp 0.5s 0.22s ease both; }
+.landing-title    { animation: fadeSlideUp 0.5s 0.32s ease both; }
+.landing-brand    { animation: fadeSlideUp 0.5s 0.38s ease both; }
+.landing-dept     { animation: fadeSlideUp 0.5s 0.44s ease both; }
+.landing-btn      { animation: fadeSlideUp 0.5s 0.54s ease both, btnGlow 2.8s 1.7s ease-in-out infinite; }
+
+/* Float (toggled by JS after entrance) */
+.landing-icon.floating { animation: floatIcon 3.6s ease-in-out infinite; }
+
+/* ── App Enter ── */
+.app-enter .mode-tabs { animation: fadeSlideUp 0.38s ease both; }
+.app-enter .step-bar  { animation: fadeSlideUp 0.38s 0.07s ease both; }
+.app-enter .card      { animation: fadeSlideUp 0.4s 0.13s ease both; }
+
+/* ── Panel Transition ── */
+.panel-entering { animation: panelEnter 0.32s cubic-bezier(.25,.46,.45,.94) both; }
+
+/* ── Step Bar Enhancements ── */
+.step-circle { transition: all 0.25s cubic-bezier(.34,1.56,.64,1); }
+.step-circle.popping { animation: stepPop 0.38s cubic-bezier(.36,.07,.19,.97) both; }
+.step-item.active .step-circle {
+  box-shadow: 0 0 0 5px rgba(29,95,168,.18), 0 3px 10px rgba(29,95,168,.3);
+}
+.step-item.done .step-circle::after {
+  content: '✓';
+  position: absolute;
+  font-size: 0.7rem;
+}
+
+/* ── Service Cards ── */
+.service-card { transition: all 0.2s cubic-bezier(.34,1.56,.64,1); }
+.service-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(29,95,168,.15); }
+.service-card:active { transform: scale(0.95); }
+.service-card .service-icon { transition: transform 0.28s cubic-bezier(.34,1.56,.64,1); }
+.service-card:hover .service-icon { transform: scale(1.15); }
+.service-card.selected .service-icon { transform: scale(1.2) rotate(-5deg); }
+.service-card.selected .service-check { animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* ── Calendar ── */
+.cal-day:not(.disabled):not(.empty):not(.selected):hover { transform: scale(1.1); }
+.cal-day { transition: background 0.15s, color 0.15s, transform 0.15s; }
+.cal-day.selected { animation: popIn 0.26s cubic-bezier(.34,1.56,.64,1) both; }
+.cal-dot { animation: dotPulse 2.2s ease-in-out infinite; }
+
+/* ── Time Slots ── */
+.time-slot:not(.booked):not(.selected):hover {
+  transform: scale(1.02);
+  box-shadow: 0 3px 10px rgba(29,95,168,.14);
+}
+.time-slot.selected { box-shadow: 0 3px 12px rgba(29,95,168,.2); }
+
+/* ── Duration Bar ── */
+.duration-bar { animation: fadeSlideUp 0.3s ease both; }
+
+/* ── Buttons ── */
+.btn-primary {
+  transition: background 0.18s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(29,95,168,.18);
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(29,95,168,.38);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.btn-ghost { transition: border-color 0.18s, color 0.18s, transform 0.15s; }
+.btn-ghost:hover { transform: translateY(-1px); }
+
+/* ── Mode Tabs ── */
+.mode-tab { position: relative; overflow: hidden; transition: all 0.2s; }
+.mode-tab::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.18) 0%, transparent 65%);
+  opacity: 0; transition: opacity 0.25s;
+}
+.mode-tab:hover:not(.active)::before { opacity: 1; }
+
+/* ── Forms ── */
+.form-input, .form-select, .form-textarea {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { transform: scale(1.012); }
+
+/* ── Confirmation ── */
+.confirm-icon.celebrating { animation: celebPop 0.65s 0.1s cubic-bezier(.34,1.56,.64,1) both; }
+.confirm-ref.revealing    { animation: refReveal 0.55s 0.42s ease both; }
+
+/* ── Alert shake ── */
+.alert.shake { animation: shake 0.42s ease; }
+
+/* ── Card base ── */
+.card { transition: box-shadow 0.2s; }
+
+/* ── Responsive ─── */
 
 /* ── Tablet (≤ 768px) ── */
 @media (max-width: 768px) {
