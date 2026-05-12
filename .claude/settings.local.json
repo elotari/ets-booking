@@ -18,7 +18,20 @@
       "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
       "PowerShell(Stop-Process -Force)",
       "Bash(node -e \"require\\('./server/db'\\); console.log\\('Fresh DB initialized OK'\\)\")",
-      "Bash(curl -s http://localhost:3000/)"
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\moham\\\\OneDrive\\\\Desktop\\\\ETS BOOKING SYSTEM\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit -m 'Fix step bar connector line direction for RTL layout *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\moham\\\\OneDrive\\\\Desktop\\\\ETS BOOKING SYSTEM\" -Depth 0)",
+      "Bash(Select-Object Name, FullName)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const css=fs.readFileSync\\('public/style.css','utf8'\\); const matches=css.match\\(/@media/g\\); console.log\\('Media query count:', matches ? matches.length : 0\\);\")",
+      "PowerShell($r = Get-Command railway -ErrorAction SilentlyContinue; if \\($r\\) { $r.Source } else { \"Railway CLI not installed\" })",
+      "PowerShell(npm install -g @railway/cli 2>&1)",
+      "PowerShell(tail -5)",
+      "PowerShell(railway --version)"
     ],
     "additionalDirectories": [
       "c:\\Users\\moham\\OneDrive\\Desktop\\ETS BOOKING SYSTEM"
