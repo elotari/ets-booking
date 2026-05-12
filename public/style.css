@@ -1410,6 +1410,92 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
 /* ── Card base ── */
 .card { transition: box-shadow 0.2s; }
 
+/* ══════════════════════════════════════
+   SECRETARY MASCOT CHARACTER
+══════════════════════════════════════ */
+.sec-char-wrap {
+  position: fixed;
+  bottom: 22px; left: 0;
+  z-index: 50; pointer-events: none;
+  animation: secCharTravel 26s linear infinite;
+}
+.sec-char-wrap.looking { animation-play-state: paused; }
+
+@keyframes secCharTravel {
+  0%    { transform: translateX(-68px) scaleX(1); }
+  46%   { transform: translateX(calc(100vw + 68px)) scaleX(1); }
+  48%   { transform: translateX(calc(100vw + 68px)) scaleX(-1); }
+  96%   { transform: translateX(-68px) scaleX(-1); }
+  98%   { transform: translateX(-68px) scaleX(1); }
+  100%  { transform: translateX(-68px) scaleX(1); }
+}
+.sc-svg { animation: secCharBob 0.5s ease-in-out infinite; }
+.sec-char-wrap.looking .sc-svg { animation-play-state: paused; }
+@keyframes secCharBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+.sc-leg-l { transform-box:fill-box; transform-origin:50% 0%; animation:secLegL 0.5s ease-in-out infinite; }
+.sc-leg-r { transform-box:fill-box; transform-origin:50% 0%; animation:secLegR 0.5s ease-in-out infinite; }
+@keyframes secLegL { 0%,100%{transform:rotate(-24deg)} 50%{transform:rotate(24deg)} }
+@keyframes secLegR { 0%,100%{transform:rotate(24deg)}  50%{transform:rotate(-24deg)} }
+.sec-char-wrap.looking .sc-leg-l,
+.sec-char-wrap.looking .sc-leg-r { animation: secToZero 0.2s ease forwards; }
+
+.sc-arm-l-grp { transform-box:fill-box; transform-origin:50% 0%; animation:secArmL 0.5s ease-in-out infinite alternate; }
+.sc-arm-r-grp { transform-box:fill-box; transform-origin:50% 0%; animation:secArmR 0.5s ease-in-out infinite alternate; }
+@keyframes secArmL { from{transform:rotate(-12deg)} to{transform:rotate(12deg)} }
+@keyframes secArmR { from{transform:rotate(12deg)}  to{transform:rotate(-12deg)} }
+@keyframes secToZero { to { transform: rotate(0deg); } }
+
+.sec-char-wrap.looking .sc-arm-l-grp { animation: secToZero 0.2s ease forwards; }
+.sec-char-wrap.looking .sc-arm-r-grp { animation: secArmWave 0.44s ease-in-out infinite; }
+@keyframes secArmWave {
+  0%   { transform: rotate(-48deg); }
+  50%  { transform: rotate(-90deg); }
+  100% { transform: rotate(-48deg); }
+}
+
+.sc-pupil-l, .sc-pupil-r {
+  transform-box:fill-box; transform-origin:center;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.sec-char-wrap.looking .sc-pupil-l,
+.sec-char-wrap.looking .sc-pupil-r { transform: scale(1.45); }
+
+.sc-brow-l, .sc-brow-r {
+  transform-box:fill-box; transform-origin:center;
+  transition: transform 0.3s ease;
+}
+.sec-char-wrap.looking .sc-brow-l { transform: translateY(-2.5px) rotate(-8deg); }
+.sec-char-wrap.looking .sc-brow-r { transform: translateY(-2.5px) rotate(8deg); }
+
+.sc-bubble {
+  position: absolute;
+  top: -52px; left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 2.5px solid var(--blue-mid,#1d5fa8);
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 20px; line-height: 1;
+  opacity: 0; transition: opacity 0.25s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(15,42,74,.2);
+}
+.sc-bubble::after {
+  content:''; position:absolute;
+  bottom:-12px; left:50%; transform:translateX(-50%);
+  border:6px solid transparent; border-top-color:var(--blue-mid,#1d5fa8);
+}
+.sc-bubble::before {
+  content:''; position:absolute;
+  bottom:-9px; left:50%; z-index:1; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:#fff;
+}
+.sec-char-wrap.looking .sc-bubble { opacity: 1; }
+
 /* ── Responsive ─── */
 
 /* ── Tablet (≤ 768px) ── */
