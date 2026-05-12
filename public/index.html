@@ -42,7 +42,7 @@
     <div class="step-bar" id="stepBar">
       <div class="step-item active" data-step="1">
         <div class="step-circle">١</div>
-        <div class="step-label">الغرفة والوقت</div>
+        <div class="step-label">التاريخ والوقت</div>
       </div>
       <div class="step-item" data-step="2">
         <div class="step-circle">٢</div>
@@ -63,7 +63,7 @@
       <div class="card">
         <div class="card-header">
           <h2>حجز قاعة الاجتماعات</h2>
-          <p>اختر الغرفة والتاريخ والوقت المناسب</p>
+          <p>اختر التاريخ والوقت المناسب</p>
         </div>
 
         <!-- Alert banner (conflict) -->
@@ -72,90 +72,14 @@
           <span>هذا الوقت محجوز مسبقاً، الرجاء اختيار وقت آخر</span>
         </div>
 
-        <!-- Section 1: Room -->
+        <!-- Section 1: Calendar -->
         <div class="card-section">
           <div class="section-title">
             <span class="sec-num">١</span>
-            اختر القاعة
-          </div>
-          <div class="rooms-grid">
-
-            <!-- Room A -->
-            <div class="room-card" id="room-a" onclick="selectRoom('a')">
-              <span class="tick-badge">✓</span>
-              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-                <circle cx="100" cy="83" r="44" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-                <rect x="84" y="14" width="32" height="15" rx="5" fill="#1d5fa8"/>
-                <rect x="84" y="131" width="32" height="15" rx="5" fill="#1d5fa8"/>
-                <rect x="12" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
-                <rect x="173" y="70" width="15" height="26" rx="5" fill="#1d5fa8"/>
-                <rect x="34" y="28" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 45 35)"/>
-                <rect x="140" y="22" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 151 29)"/>
-                <rect x="28" y="118" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(35 39 125)"/>
-                <rect x="148" y="116" width="22" height="14" rx="4" fill="#3a82d4" transform="rotate(-35 159 123)"/>
-              </svg>
-              <div class="room-name">غرفة A — الطابق الأول</div>
-              <span class="room-capacity">٨ أشخاص</span>
-              <div class="room-desc">طابق أول بجانب قسم ETS. شاشة ذكية، اتصال فيديو، طاولة مستديرة.</div>
-            </div>
-
-            <!-- Room B -->
-            <div class="room-card" id="room-b" onclick="selectRoom('b')">
-              <span class="tick-badge">✓</span>
-              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-                <rect x="40" y="50" width="120" height="60" rx="6" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-                <rect x="48" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="74" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="100" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="126" y="32" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="48" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="74" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="100" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="126" y="114" width="20" height="14" rx="4" fill="#1d5fa8"/>
-                <rect x="16" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
-                <rect x="16" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
-                <rect x="165" y="52" width="19" height="24" rx="4" fill="#3a82d4"/>
-                <rect x="165" y="84" width="19" height="22" rx="4" fill="#3a82d4"/>
-              </svg>
-              <div class="room-name">غرفة B — الطابق الثاني</div>
-              <span class="room-capacity">١٦ شخص</span>
-              <div class="room-desc">غرفة رئيسية، طابق ثانٍ. بروجكتور، HDMI. للعروض الكبيرة.</div>
-            </div>
-
-            <!-- Room C -->
-            <div class="room-card" id="room-c" onclick="selectRoom('c')">
-              <span class="tick-badge">✓</span>
-              <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="6" y="6" width="188" height="148" rx="8" fill="#e4eff9" stroke="#bad0e8" stroke-width="2"/>
-                <rect x="150" y="10" width="38" height="8" rx="3" fill="#a0c8f0" opacity="0.6"/>
-                <circle cx="100" cy="83" r="34" fill="#c0d8f0" stroke="#3a82d4" stroke-width="2.5"/>
-                <rect x="86" y="22" width="28" height="14" rx="5" fill="#1d5fa8"/>
-                <rect x="86" y="124" width="28" height="14" rx="5" fill="#1d5fa8"/>
-                <rect x="26" y="42" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 36 49)"/>
-                <rect x="150" y="38" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 160 45)"/>
-                <rect x="30" y="108" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(30 40 115)"/>
-                <rect x="148" y="106" width="20" height="14" rx="4" fill="#3a82d4" transform="rotate(-30 158 113)"/>
-              </svg>
-              <div class="room-name">غرفة C — الطابق الثالث</div>
-              <span class="room-capacity">٦ أشخاص</span>
-              <div class="room-desc">هادئة، طابق ثالث. طاولة مستديرة. للنقاشات الخاصة مع إطلالة.</div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Section 2: Calendar -->
-        <div class="card-section">
-          <div class="section-title">
-            <span class="sec-num">٢</span>
             اختر التاريخ
           </div>
 
-          <div id="calendarHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;display:none;">
-            اختر القاعة أولاً لعرض التقويم
-          </div>
+          <div id="calendarHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;display:none;"></div>
 
           <div id="calendarWrap">
             <div class="calendar-nav">
@@ -170,7 +94,7 @@
         <!-- Section 3: Time -->
         <div class="card-section">
           <div class="section-title">
-            <span class="sec-num">٣</span>
+            <span class="sec-num">٢</span>
             اختر الوقت
           </div>
 
@@ -444,7 +368,7 @@ function escHtml(str) {
 /* ─── Booking State ─── */
 const state = {
   step: 1,
-  room: null,
+  room: 'a',
   date: null,
   startTime: null,
   endTime: null,
@@ -495,7 +419,7 @@ function formatDateAr(dateStr) {
 }
 
 function roomLabel(r) {
-  return { a:'غرفة A — الطابق الأول', b:'غرفة B — الطابق الثاني', c:'غرفة C — الطابق الثالث' }[r] || r;
+  return 'غرفة اجتماعات ETS';
 }
 
 function serviceLabel(s) {
@@ -777,7 +701,6 @@ function handleDeptChange() {
 /* ─── Step Guards ─── */
 function goStep2() {
   document.getElementById('conflictAlert').style.display = 'none';
-  if (!state.room)      { alert('الرجاء اختيار القاعة أولاً'); return; }
   if (!state.date)      { alert('الرجاء اختيار التاريخ'); return; }
   if (!state.startTime) { alert('الرجاء اختيار وقت البداية'); return; }
   if (!state.endTime)   { alert('الرجاء اختيار وقت النهاية'); return; }
@@ -911,7 +834,7 @@ function showConfirmation(ref) {
 
 function resetApp() {
   state.step = 1;
-  state.room = null;
+  state.room = 'a';
   state.date = null;
   state.startTime = null;
   state.endTime = null;
@@ -923,7 +846,6 @@ function resetApp() {
   state.calYear = new Date().getFullYear();
   state.calMonth = new Date().getMonth();
 
-  document.querySelectorAll('.room-card').forEach(c => c.classList.remove('selected'));
   document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('fName').value = '';
   document.getElementById('fDept').value = '';
@@ -1156,7 +1078,7 @@ function showCancelCalendar() {
 }
 
 /* ─── Init ─── */
-document.getElementById('calendarHint').style.display = 'block';
+loadRoomBookingDates('a');
 renderCalendar();
 </script>
 </body>
