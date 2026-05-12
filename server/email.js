@@ -1,8 +1,13 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM   = process.env.FROM_EMAIL      || 'onboarding@resend.dev';
-const SEC    = process.env.SECRETARY_EMAIL || '';
+const GMAIL_USER = process.env.GMAIL_USER || '';
+const GMAIL_PASS = process.env.GMAIL_PASS || '';
+const SEC        = process.env.SECRETARY_EMAIL || '';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: GMAIL_USER, pass: GMAIL_PASS },
+});
 
 const DAY_AR = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -13,11 +18,11 @@ function formatDateAr(dateStr) {
 
 function serviceLabel(s) {
   const map = {
-    projector:   'جهاز العرض',
-    whiteboard:  'السبورة',
-    videoconf:   'مؤتمر مرئي',
-    coffee:      'قهوة / ضيافة',
-    water:       'مياه',
+    projector:  'جهاز العرض',
+    whiteboard: 'السبورة',
+    videoconf:  'مؤتمر مرئي',
+    coffee:     'قهوة / ضيافة',
+    water:      'مياه',
   };
   return map[s] || s;
 }
@@ -109,14 +114,14 @@ function secretaryHtml(booking) {
               ${row('رقم الوظيفي', employee_id || '—')}
               ${row('القسم',       department)}
               ${row('الهاتف',      phone)}
-              ${row('البريد',   email)}
-              ${row('الغرفة',   room.toUpperCase())}
-              ${row('التاريخ',  dateAr)}
-              ${row('الوقت',    `${start_time} — ${end_time}`)}
-              ${row('الموضوع',  subject)}
-              ${row('الخدمات',  servicesText)}
-              ${row('ملاحظات',  notes)}
-              ${row('REF',      ref)}
+              ${row('البريد',      email)}
+              ${row('الغرفة',      room.toUpperCase())}
+              ${row('التاريخ',     dateAr)}
+              ${row('الوقت',       `${start_time} — ${end_time}`)}
+              ${row('الموضوع',     subject)}
+              ${row('الخدمات',     servicesText)}
+              ${row('ملاحظات',     notes)}
+              ${row('REF',         ref)}
             </table>
           </td>
         </tr>
@@ -140,8 +145,8 @@ async function sendConfirmationEmails(booking) {
 
   if (email) {
     sends.push(
-      resend.emails.send({
-        from:    FROM,
+      transporter.sendMail({
+        from:    `"ETS Booking" <${GMAIL_USER}>`,
         to:      email,
         subject: `تأكيد حجز غرفة الاجتماعات — REF: ${ref}`,
         html:    bookerHtml(booking),
@@ -151,8 +156,8 @@ async function sendConfirmationEmails(booking) {
 
   if (SEC) {
     sends.push(
-      resend.emails.send({
-        from:    FROM,
+      transporter.sendMail({
+        from:    `"ETS Booking" <${GMAIL_USER}>`,
         to:      SEC,
         subject: `حجز جديد — ${subject} · ${ref}`,
         html:    secretaryHtml(booking),
