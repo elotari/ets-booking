@@ -809,6 +809,11 @@ async function selectDate(dateStr) {
   document.getElementById('timeHint').style.display='none';
   document.getElementById('timePicker').classList.add('unlocked');
   renderStartList(); renderEndList();
+  const dow=new Date(dateStr).getDay();
+  const line = dow===0 ? randLine(MASCOT_LINES.dateSunday)
+             : dow===4 ? randLine(MASCOT_LINES.dateThursday)
+             : randLine(MASCOT_LINES.dateNormal);
+  showMascot(line);
 }
 
 /* ─── Time Picker ─── */
@@ -870,8 +875,19 @@ function updateDurationBar(){
 
 /* ─── Services ─── */
 function toggleService(key,el){
-  if(state.services.includes(key)){state.services=state.services.filter(s=>s!==key);el.classList.remove('selected');}
-  else{state.services.push(key);el.classList.add('selected');}
+  if(state.services.includes(key)){
+    state.services=state.services.filter(s=>s!==key);
+    el.classList.remove('selected');
+    showMascot(randLine(MASCOT_LINES.deselect));
+  } else {
+    state.services.push(key);
+    el.classList.add('selected');
+    if(state.services.length>=2){
+      showMascot(randLine(MASCOT_LINES.both));
+    } else {
+      showMascot(randLine(MASCOT_LINES[key]||MASCOT_LINES.dateNormal));
+    }
+  }
 }
 
 /* ─── Department ─── */
@@ -1144,19 +1160,56 @@ function showCancelSuccess(booking){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ─── Mascot Click Reaction ─── */
-let charLookTimeout;
-document.addEventListener('click', function() {
+/* ─── Mascot ─── */
+const MASCOT_LINES = {
+  drinks: [
+    "قهوة؟ لا تنسوا نصيبي ☕",
+    "شاي أو قهوة؟ أنا بايب الاثنين 😄",
+    "قهوة الصبح تنشّط الذهن 😌",
+  ],
+  catering: [
+    "كيترينج؟ يعني بتكلفوا علينا 😩",
+    "الله يبارك بشهيتكم 🍽️",
+    "مين بيوافق على الميزانية؟ 😅",
+  ],
+  both: [
+    "خدمتين؟ ترا قزّرتوها 😂",
+    "لا لا بالعافية! بكفي بكفي 😤",
+    "ما شاء الله على الطموح 🙏",
+  ],
+  deselect: [
+    "تمام وفّرتوا على الميزانية 😌",
+    "قرار حكيم والله 👌",
+    "عقلكم على راسكم 😄",
+  ],
+  dateNormal: [
+    "يوم موفق إن شاء الله! 🗓️",
+    "اختيار ممتاز ✨",
+    "سجّلت الموعد 📋",
+    "اخترتم اليوم المناسب 😊",
+    "يلا يلا، ننجز! 💪",
+  ],
+  dateSunday: [
+    "أول الأسبوع؟ بسم الله 💪",
+    "يوم الأحد؟ همّة عالية! 🌟",
+  ],
+  dateThursday: [
+    "آخر الأسبوع؟ يلا خلصوا بسرعة 😄",
+    "الخميس؟ ترا بكرا عطلة 😏",
+  ],
+};
+
+let mascotTimer = null;
+function showMascot(msg) {
   const char = document.getElementById('secChar');
   if (!char || char.style.display === 'none') return;
-  const matrix = new DOMMatrixReadOnly(getComputedStyle(char).transform);
-  const isFlipped = matrix.a < 0;
   const bubble = char.querySelector('.sc-bubble');
-  if (bubble) bubble.style.transform = `translateX(-50%) scaleX(${isFlipped ? -1 : 1})`;
-  char.classList.add('looking');
-  clearTimeout(charLookTimeout);
-  charLookTimeout = setTimeout(() => char.classList.remove('looking'), 2600);
-});
+  if (bubble) bubble.textContent = msg;
+  char.classList.add('peeking');
+  clearTimeout(mascotTimer);
+  mascotTimer = setTimeout(() => char.classList.remove('peeking'), 4200);
+}
+function randLine(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 /* ─── Init ─── */
 loadRoomBookingDates('a');
