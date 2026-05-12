@@ -45,22 +45,33 @@
     .landing-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(29,95,168,.6); }
     .landing-lang-btn {
       position: fixed; top: 20px; inset-inline-start: 20px;
-      background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.28);
-      color: rgba(255,255,255,.9); border-radius: 20px; padding: 7px 20px;
-      font-size: 0.8rem; font-weight: 700; cursor: pointer; letter-spacing: 1px;
+      background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.38);
+      color: #fff; border-radius: 24px; padding: 11px 30px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; letter-spacing: 1.5px;
       transition: background .2s; font-family: inherit;
     }
-    .landing-lang-btn:hover { background: rgba(255,255,255,.22); }
+    .landing-lang-btn:hover { background: rgba(255,255,255,.26); }
 
     /* ── Main app lang toggle ── */
     .main-lang-btn {
       position: fixed; bottom: 20px; inset-inline-start: 20px;
       background: var(--blue-mid,#1d5fa8); color: #fff; border: none;
-      border-radius: 20px; padding: 9px 20px; font-size: 0.78rem; font-weight: 700;
-      cursor: pointer; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.22);
-      font-family: inherit; letter-spacing: 1px; transition: background .2s;
+      border-radius: 24px; padding: 12px 28px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; z-index: 100; box-shadow: 0 4px 18px rgba(0,0,0,.25);
+      font-family: inherit; letter-spacing: 1.5px; transition: background .2s;
     }
     .main-lang-btn:hover { background: #2878cc; }
+
+    /* ── Main app back-to-home button ── */
+    .main-back-btn {
+      position: fixed; top: 20px; inset-inline-start: 20px;
+      background: rgba(15,42,74,.82); color: #fff; border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 24px; padding: 12px 28px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; z-index: 100; box-shadow: 0 4px 18px rgba(0,0,0,.22);
+      font-family: inherit; letter-spacing: 1px; transition: background .2s, border-color .2s;
+      backdrop-filter: blur(6px);
+    }
+    .main-back-btn:hover { background: #0f2a4a; border-color: rgba(255,255,255,.38); }
   </style>
 </head>
 <body>
@@ -84,6 +95,7 @@
      MAIN APP
 ══════════════════════════════════════ -->
 <div id="mainApp" style="display:none;">
+<button class="main-back-btn" id="mainBackBtn" onclick="backToHome()">🏠 <span id="mainBackLabel">الرئيسية</span></button>
 <button class="main-lang-btn" id="mainLangBtn" onclick="toggleLang()">EN</button>
 <div class="page-wrapper">
 
@@ -412,7 +424,7 @@ const TRANS = {
     'conf.name':'الاسم','conf.services':'الخدمات',
     'cancel.ref':'رقم المرجع','cancel.booking_name':'الاسم','cancel.booking_date':'التاريخ',
     'cancel.booking_time':'الوقت','cancel.booking_subject':'الموضوع',
-    'lang_toggle':'EN',
+    'lang_toggle':'EN', 'back_home':'الرئيسية',
   },
   en: {
     'landing.welcome':'Welcome','landing.dept':'ETS Department','landing.btn':'Book Meeting Room',
@@ -471,7 +483,7 @@ const TRANS = {
     'conf.name':'Name','conf.services':'Services',
     'cancel.ref':'Reference','cancel.booking_name':'Name','cancel.booking_date':'Date',
     'cancel.booking_time':'Time','cancel.booking_subject':'Subject',
-    'lang_toggle':'عربي',
+    'lang_toggle':'عربي', 'back_home':'Home',
   }
 };
 
@@ -505,6 +517,7 @@ function applyTranslations() {
   const langLabel = t('lang_toggle');
   document.getElementById('landingLangBtn').textContent = langLabel;
   document.getElementById('mainLangBtn').textContent    = langLabel;
+  document.getElementById('mainBackLabel').textContent  = t('back_home');
   // landing page
   document.getElementById('landingWelcome').textContent = t('landing.welcome');
   document.getElementById('landingDept').textContent    = t('landing.dept');
@@ -543,6 +556,13 @@ function enterSystem() {
     landing.style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
   }, 580);
+}
+
+function backToHome() {
+  document.getElementById('mainApp').style.display = 'none';
+  const landing = document.getElementById('landingPage');
+  landing.style.display = 'flex';
+  landing.classList.remove('fade-out');
 }
 
 /* ─── Shared helpers ─── */
