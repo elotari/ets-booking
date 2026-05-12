@@ -190,10 +190,17 @@
               <input class="form-input" id="fName" type="text" placeholder="أدخل اسمك الكامل" />
             </div>
             <div class="form-group">
+              <label class="form-label"><span class="req">*</span> رقم الوظيفي</label>
+              <input class="form-input" id="fEmpId" type="text" placeholder="أدخل رقمك الوظيفي" dir="ltr" />
+            </div>
+            <div class="form-group">
               <label class="form-label"><span class="req">*</span> القسم</label>
               <select class="form-select" id="fDept" onchange="handleDeptChange()">
                 <option value="">— اختر القسم —</option>
                 <option value="ETS">ETS</option>
+                <option value="EO">EO</option>
+                <option value="EM">EM</option>
+                <option value="EOM&amp;M">EOM&amp;M</option>
                 <option value="Manager EOG">Manager EOG</option>
                 <option value="__other__">أخرى...</option>
               </select>
@@ -204,7 +211,7 @@
               <input class="form-input" id="fSubject" type="text" placeholder="أدخل موضوع الاجتماع" />
             </div>
             <div class="form-group">
-              <label class="form-label">البريد الإلكتروني</label>
+              <label class="form-label"><span class="req">*</span> البريد الإلكتروني</label>
               <input class="form-input" id="fEmail" type="email" placeholder="example@company.com" dir="ltr" />
             </div>
             <div class="form-group">
@@ -282,33 +289,46 @@
   <!-- ═══ CANCEL SECTION ═══ -->
   <div id="cancelSection" style="display:none;">
 
-    <!-- Cancel calendar view -->
-    <div id="cancelMain">
+    <!-- 1: Lookup by employee ID -->
+    <div id="cancelLookupView">
       <div class="card">
         <div class="card-header">
           <h2>إلغاء حجز</h2>
-          <p>اختر الاجتماع من التقويم لطلب إلغائه</p>
+          <p>أدخل رقمك الوظيفي لعرض حجوزاتك</p>
         </div>
         <div class="card-section">
           <div class="section-title">
             <span class="sec-num">١</span>
-            جميع الاجتماعات المحجوزة
+            رقم الوظيفي
           </div>
-          <div class="calendar-nav">
-            <button class="cal-nav-btn" onclick="cancelPrevMonth()">&#8250;</button>
-            <div class="month-label" id="cancelMonthLabel"></div>
-            <button class="cal-nav-btn" onclick="cancelNextMonth()">&#8249;</button>
+          <div class="form-group" style="max-width:320px;">
+            <input class="form-input" id="cancelEmpId" type="text" placeholder="أدخل رقمك الوظيفي" dir="ltr" />
           </div>
-          <div class="sec-cal-grid" id="cancelCalHeaders" style="border-top:none;"></div>
-          <div class="sec-cal-grid" id="cancelCalGrid"></div>
-          <div style="margin-top:12px;padding:10px 14px;background:var(--blue-tint2);border-radius:8px;font-size:0.8rem;color:var(--muted);text-align:center;border:1px solid var(--border-light);">
-            انقر على أي اجتماع محجوز في التقويم لعرض تفاصيله وطلب إلغائه
+          <div id="cancelLookupAlert" class="alert alert-danger" style="display:none;margin-top:12px;">
+            <span>⚠️</span><span id="cancelLookupAlertMsg"></span>
           </div>
+        </div>
+        <div class="btn-strip">
+          <button class="btn-primary" id="cancelSearchBtn" onclick="lookupEmployeeBookings()">بحث ←</button>
         </div>
       </div>
     </div>
 
-    <!-- Cancel success view -->
+    <!-- 2: Bookings list -->
+    <div id="cancelListView" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <h2>حجوزاتك</h2>
+          <p id="cancelListSubtitle"></p>
+        </div>
+        <div id="cancelBookingsContent" class="card-section"></div>
+        <div class="btn-strip">
+          <button class="btn-ghost" onclick="showCancelLookup()">→ تغيير رقم الوظيفي</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3: Success -->
     <div id="cancelSuccessView" style="display:none;">
       <div class="card">
         <div class="card-header">
@@ -324,7 +344,7 @@
             ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء
           </div>
           <div id="cancelSuccessSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:0.85rem;"></div>
-          <button class="btn-primary" onclick="showCancelCalendar()" style="min-width:180px;">
+          <button class="btn-primary" onclick="showCancelLookup()" style="min-width:180px;">
             ← طلب إلغاء آخر
           </button>
         </div>
@@ -373,7 +393,7 @@ const state = {
   startTime: null,
   endTime: null,
   services: [],
-  name: '', dept: '', subject: '', email: '', phone: '', notes: '',
+  name: '', empId: '', dept: '', subject: '', email: '', phone: '', notes: '',
   calYear: new Date().getFullYear(),
   calMonth: new Date().getMonth(),
   bookingsForDate: [],
@@ -443,7 +463,7 @@ function switchMode(mode) {
     cancelSection.style.display = 'block';
     tabCancel.classList.add('active');
     tabBook.classList.remove('active');
-    loadCancelCalendar();
+    showCancelLookup();
   }
 }
 
@@ -713,13 +733,15 @@ function goStep3() {
 
 function goStep4() {
   const name    = document.getElementById('fName').value.trim();
+  const empId   = document.getElementById('fEmpId').value.trim();
   const deptSel = document.getElementById('fDept').value;
   const subject = document.getElementById('fSubject').value.trim();
   const email   = document.getElementById('fEmail').value.trim();
   const phone   = document.getElementById('fPhone').value.trim();
   const notes   = document.getElementById('fNotes').value.trim();
 
-  if (!name) { alert('الرجاء إدخال الاسم الكامل'); return; }
+  if (!name)  { alert('الرجاء إدخال الاسم الكامل'); return; }
+  if (!empId) { alert('الرجاء إدخال رقمك الوظيفي'); return; }
   if (!deptSel) { alert('الرجاء اختيار القسم'); return; }
 
   let dept = deptSel;
@@ -729,8 +751,10 @@ function goStep4() {
   }
 
   if (!subject) { alert('الرجاء إدخال موضوع الاجتماع'); return; }
+  if (!email)   { alert('الرجاء إدخال البريد الإلكتروني'); return; }
 
   state.name    = name;
+  state.empId   = empId;
   state.dept    = dept;
   state.subject = subject;
   state.email   = email;
@@ -751,9 +775,10 @@ function buildReviewTable() {
     ['المدة',         formatDuration(timeToMin(state.endTime) - timeToMin(state.startTime))],
     ['الخدمات',       svcLabels],
     ['الاسم',         state.name],
+    ['رقم الوظيفي',   state.empId],
     ['القسم',         state.dept],
     ['الموضوع',       state.subject],
-    ['البريد',        state.email || '—'],
+    ['البريد',        state.email],
     ['الهاتف',        state.phone || '—'],
     ['ملاحظات',       state.notes || '—'],
   ];
@@ -771,17 +796,18 @@ async function submitBooking() {
   document.getElementById('submitAlert').style.display = 'none';
 
   const payload = {
-    room:       state.room,
-    date:       state.date,
-    start_time: state.startTime,
-    end_time:   state.endTime,
-    name:       state.name,
-    department: state.dept,
-    subject:    state.subject,
-    email:      state.email,
-    phone:      state.phone,
-    services:   state.services,
-    notes:      state.notes,
+    room:        state.room,
+    date:        state.date,
+    start_time:  state.startTime,
+    end_time:    state.endTime,
+    name:        state.name,
+    employee_id: state.empId,
+    department:  state.dept,
+    subject:     state.subject,
+    email:       state.email,
+    phone:       state.phone,
+    services:    state.services,
+    notes:       state.notes,
   };
 
   try {
@@ -839,7 +865,7 @@ function resetApp() {
   state.startTime = null;
   state.endTime = null;
   state.services = [];
-  state.name = ''; state.dept = ''; state.subject = '';
+  state.name = ''; state.empId = ''; state.dept = ''; state.subject = '';
   state.email = ''; state.phone = ''; state.notes = '';
   state.bookingsForDate = [];
   state.datesWithBookings = new Set();
@@ -848,6 +874,7 @@ function resetApp() {
 
   document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('fName').value = '';
+  document.getElementById('fEmpId').value = '';
   document.getElementById('fDept').value = '';
   document.getElementById('fDeptOther').value = '';
   document.getElementById('fDeptOther').style.display = 'none';
@@ -864,18 +891,85 @@ function resetApp() {
 }
 
 /* ─── Cancel Section ─── */
-let cancelCalYear  = new Date().getFullYear();
-let cancelCalMonth = new Date().getMonth();
-let allBookingsForCancel = [];
-let selectedCancelBooking = null;
+let cancelEmployeeBookings = [];
+let selectedCancelBooking  = null;
 
-async function loadCancelCalendar() {
-  try {
-    const res = await fetch('/api/bookings/all');
-    allBookingsForCancel = await res.json();
-    renderCancelCalendar();
-  } catch(e) { /* ignore */ }
+function showCancelLookup() {
+  document.getElementById('cancelLookupView').style.display  = 'block';
+  document.getElementById('cancelListView').style.display    = 'none';
+  document.getElementById('cancelSuccessView').style.display = 'none';
+  document.getElementById('cancelLookupAlert').style.display = 'none';
 }
+
+async function lookupEmployeeBookings() {
+  const empId   = document.getElementById('cancelEmpId').value.trim();
+  const alertEl = document.getElementById('cancelLookupAlert');
+  const msgEl   = document.getElementById('cancelLookupAlertMsg');
+  const btn     = document.getElementById('cancelSearchBtn');
+
+  if (!empId) {
+    alertEl.style.display = 'flex';
+    msgEl.textContent = 'الرجاء إدخال رقمك الوظيفي';
+    return;
+  }
+
+  alertEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'جارٍ البحث...';
+
+  try {
+    const res  = await fetch(`/api/bookings/by-employee/${encodeURIComponent(empId)}`);
+    const data = await res.json();
+    cancelEmployeeBookings = data;
+    showCancelList(empId);
+  } catch(e) {
+    alertEl.style.display = 'flex';
+    msgEl.textContent = 'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'بحث ←';
+  }
+}
+
+function showCancelList(empId) {
+  document.getElementById('cancelLookupView').style.display = 'none';
+  document.getElementById('cancelListView').style.display   = 'block';
+
+  const today    = new Date().toISOString().slice(0, 10);
+  const upcoming = cancelEmployeeBookings.filter(b => b.date >= today);
+  cancelEmployeeBookings = upcoming;
+
+  document.getElementById('cancelListSubtitle').textContent =
+    `رقم الوظيفي: ${empId} · ${upcoming.length} حجز قادم`;
+
+  const content = document.getElementById('cancelBookingsContent');
+
+  if (upcoming.length === 0) {
+    content.innerHTML = `
+      <div style="text-align:center;padding:36px 24px;color:var(--muted);">
+        <div style="font-size:2.2rem;margin-bottom:10px;">📅</div>
+        <div style="font-weight:600;">لا توجد حجوزات قادمة مرتبطة بهذا الرقم الوظيفي</div>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = upcoming.map((b, i) => `
+    <div style="padding:14px 0;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:700;color:var(--blue-dark);font-size:0.95rem;">${escHtml(b.subject || '—')}</div>
+        <div style="font-size:0.82rem;color:var(--muted);margin-top:3px;">${formatDateAr(b.date)} · ${b.start_time}–${b.end_time}</div>
+        <div style="font-size:0.78rem;color:var(--slate);margin-top:2px;direction:ltr;">${escHtml(b.ref || '')}</div>
+      </div>
+      <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">طلب إلغاء</button>
+    </div>
+  `).join('');
+}
+
+// Placeholder — kept so old calls don't crash
+function cancelPrevMonth() {}
+function cancelNextMonth() {}
+function renderCancelCalendar() {}
+function loadCancelCalendar() {}
 
 function cancelPrevMonth() {
   cancelCalMonth--;
@@ -955,19 +1049,16 @@ function renderCancelCalendar() {
   }
 }
 
-function openCancelModal(booking) {
+function openCancelModal(idx) {
+  const booking = cancelEmployeeBookings[idx];
+  if (!booking) return;
   selectedCancelBooking = booking;
-  const r = (booking.room || '').toLowerCase();
 
   document.getElementById('cancelModalBody').innerHTML = `
     <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:14px;margin-bottom:16px;">
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
         <div class="detail-key">رقم المرجع</div>
         <div class="detail-val" style="direction:ltr;">${escHtml(booking.ref||'')}</div>
-      </div>
-      <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
-        <div class="detail-key">القاعة</div>
-        <div class="detail-val">${roomLabel(r)}</div>
       </div>
       <div class="detail-row" style="padding:6px 0;border-bottom:1px solid var(--border-light);">
         <div class="detail-key">الاسم</div>
@@ -986,15 +1077,11 @@ function openCancelModal(booking) {
         <div class="detail-val">${escHtml(booking.subject||'—')}</div>
       </div>
     </div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label class="form-label">اسمك (اختياري)</label>
-      <input class="form-input" id="cancelRequesterName" type="text" placeholder="من يطلب الإلغاء؟" />
-    </div>
     <div class="form-group">
       <label class="form-label">سبب الإلغاء (اختياري)</label>
       <textarea class="form-textarea" id="cancelReason" placeholder="اذكر سبب طلب الإلغاء إن أردت..." style="min-height:70px;"></textarea>
     </div>
-    <div id="cancelModalAlert" style="display:none;margin-top:12px;"></div>
+    <div id="cancelModalAlert" style="display:none;"></div>
   `;
 
   document.getElementById('cancelSubmitBtn').disabled = false;
@@ -1014,10 +1101,9 @@ function handleCancelOverlayClick(e) {
 async function submitCancelRequest() {
   if (!selectedCancelBooking) return;
 
-  const btn       = document.getElementById('cancelSubmitBtn');
-  const alertEl   = document.getElementById('cancelModalAlert');
-  const requester = document.getElementById('cancelRequesterName').value.trim();
-  const reason    = document.getElementById('cancelReason').value.trim();
+  const btn     = document.getElementById('cancelSubmitBtn');
+  const alertEl = document.getElementById('cancelModalAlert');
+  const reason  = document.getElementById('cancelReason').value.trim();
 
   btn.disabled = true;
   btn.textContent = 'جارٍ الإرسال...';
@@ -1025,12 +1111,12 @@ async function submitCancelRequest() {
 
   try {
     const res = await fetch('/api/cancel-requests', {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body:    JSON.stringify({
         booking_id:     selectedCancelBooking.id,
-        requester_name: requester || null,
-        reason:         reason    || null,
+        requester_name: selectedCancelBooking.name,
+        reason:         reason || null,
       })
     });
     const data = await res.json();
@@ -1056,25 +1142,18 @@ async function submitCancelRequest() {
 }
 
 function showCancelSuccess(booking) {
-  document.getElementById('cancelMain').style.display = 'none';
+  document.getElementById('cancelListView').style.display    = 'none';
   document.getElementById('cancelSuccessView').style.display = 'block';
 
-  const r = (booking.room || '').toLowerCase();
   document.getElementById('cancelSuccessSummary').innerHTML = `
     <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:0.85rem;">
       <span style="color:var(--muted);font-weight:600;">رقم الحجز</span><span style="font-weight:700;direction:ltr;">${escHtml(booking.ref||'')}</span>
-      <span style="color:var(--muted);font-weight:600;">الاسم</span><span style="font-weight:700;">${escHtml(booking.name||'')}</span>
       <span style="color:var(--muted);font-weight:600;">التاريخ</span><span style="font-weight:700;">${formatDateAr(booking.date)}</span>
       <span style="color:var(--muted);font-weight:600;">الوقت</span><span style="font-weight:700;direction:ltr;">${booking.start_time} – ${booking.end_time}</span>
+      <span style="color:var(--muted);font-weight:600;">الموضوع</span><span style="font-weight:700;">${escHtml(booking.subject||'')}</span>
     </div>
   `;
   window.scrollTo({top:0, behavior:'smooth'});
-}
-
-function showCancelCalendar() {
-  document.getElementById('cancelSuccessView').style.display = 'none';
-  document.getElementById('cancelMain').style.display = 'block';
-  loadCancelCalendar();
 }
 
 /* ─── Init ─── */

@@ -6,7 +6,7 @@ const { broadcast } = require('../events');
 // GET /api/cancel-requests
 router.get('/', (req, res) => {
   const rows = db.prepare(`
-    SELECT cr.*, b.department, b.subject
+    SELECT cr.*, b.department, b.subject, b.employee_id as booking_employee_id
     FROM cancel_requests cr
     LEFT JOIN bookings b ON cr.booking_id = b.id
     ORDER BY cr.requested_at DESC

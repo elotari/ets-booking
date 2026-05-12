@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../db');
 const { broadcast } = require('../events');
+const { sendConfirmationEmails } = require('../email');
 
 function timeToMinutes(t) {
   const [h, m] = t.split(':').map(Number);
@@ -42,6 +43,16 @@ router.get('/all', (req, res) => {
   res.json(rows);
 });
 
+// GET /api/bookings/by-employee/:empId
+router.get('/by-employee/:empId', (req, res) => {
+  const empId = String(req.params.empId).trim();
+  if (!empId) return res.status(400).json({ error: 'employee_id مطلوب' });
+  const rows = db
+    .prepare('SELECT * FROM bookings WHERE employee_id = ? ORDER BY date ASC, start_time ASC')
+    .all(empId);
+  res.json(rows);
+});
+
 // GET /api/bookings/:id
 router.get('/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM bookings WHERE id = ?').get(Number(req.params.id));
@@ -54,12 +65,18 @@ router.post('/', (req, res) => {
   const {
     room, date, start_time, end_time,
     name, department, subject,
-    email, phone, services, notes
+    employee_id, email, phone, services, notes
   } = req.body;
 
   // Required fields
   if (!room || !date || !start_time || !end_time || !name || !department || !subject) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
+  if (!employee_id || !String(employee_id).trim()) {
+    return res.status(400).json({ success: false, error: 'رقم الوظيفي مطلوب' });
+  }
+  if (!email || !String(email).trim()) {
+    return res.status(400).json({ success: false, error: 'البريد الإلكتروني مطلوب' });
   }
 
   // Room
@@ -129,13 +146,14 @@ router.post('/', (req, res) => {
 
   const info = db.prepare(`
     INSERT INTO bookings
-      (room, date, start_time, end_time, name, department, subject, email, phone, services, notes, created_at, ref)
+      (room, date, start_time, end_time, name, department, subject, employee_id, email, phone, services, notes, created_at, ref)
     VALUES
-      (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     room.toLowerCase(), date, start_time, end_time,
     name, department, subject,
-    email || null, phone || null,
+    String(employee_id).trim(),
+    email, phone || null,
     servicesJson, notes || null,
     createdAt, ref
   );
@@ -143,6 +161,15 @@ router.post('/', (req, res) => {
   const newId = Number(info.lastInsertRowid);
   broadcast('booking-changed', { action: 'created', id: newId, ref, room: room.toLowerCase(), date });
   res.json({ success: true, ref, id: newId });
+
+  // Fire-and-forget — email failure must not affect the response
+  sendConfirmationEmails({
+    ref, room: room.toLowerCase(), date, start_time, end_time,
+    subject, department, name,
+    employee_id: String(employee_id).trim(),
+    email, phone: phone || null,
+    services: servicesJson, notes: notes || null,
+  }).catch(err => console.error('[email] unexpected error:', err));
 });
 
 // DELETE /api/bookings/:id

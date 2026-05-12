@@ -9,6 +9,10 @@ const db = new DatabaseSync(path.join(DATA_DIR, 'bookings.db'));
 
 db.exec('PRAGMA journal_mode=WAL');
 
+// Migrations — safe to run on existing DBs
+try { db.exec('ALTER TABLE bookings ADD COLUMN employee_id TEXT'); } catch {}
+
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS bookings (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
