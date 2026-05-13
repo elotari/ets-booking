@@ -72,6 +72,76 @@
       backdrop-filter: blur(6px);
     }
     .main-back-btn:hover { background: #0f2a4a; border-color: rgba(255,255,255,.38); }
+
+    /* ── Landing Carousel ── */
+    .landing-carousel {
+      width: min(560px, 92vw);
+      margin: 0 auto 28px;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255,255,255,.05);
+      border: 1.5px solid rgba(255,255,255,.18);
+      box-shadow: 0 12px 36px rgba(0,0,0,.35);
+      aspect-ratio: 16 / 9;
+    }
+    .landing-carousel.empty { display: none; }
+    .lc-track {
+      position: absolute; inset: 0;
+      display: flex;
+      transition: transform .6s cubic-bezier(.4,.0,.2,1);
+      will-change: transform;
+    }
+    .lc-slide {
+      flex: 0 0 100%;
+      position: relative;
+      background: #061826 center / cover no-repeat;
+    }
+    .lc-slide::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(6,24,38,.78) 0%, rgba(6,24,38,.10) 50%, rgba(6,24,38,.30) 100%);
+      pointer-events: none;
+    }
+    .lc-caption {
+      position: absolute; inset-inline-start: 18px; bottom: 16px; right: 18px;
+      color: #fff; font-weight: 700; font-size: 1rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,.6);
+      z-index: 2;
+      max-width: calc(100% - 36px);
+    }
+    .lc-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(0,0,0,.4); border: 1.5px solid rgba(255,255,255,.35);
+      color: #fff; font-size: 1.3rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 3;
+      transition: background .2s, transform .2s;
+      backdrop-filter: blur(4px);
+    }
+    .lc-nav:hover { background: rgba(0,0,0,.65); transform: translateY(-50%) scale(1.06); }
+    .lc-prev { inset-inline-start: 10px; }
+    .lc-next { inset-inline-end: 10px; }
+    .lc-dots {
+      position: absolute; bottom: 8px; inset-inline-start: 50%;
+      transform: translateX(50%);
+      display: flex; gap: 6px;
+      z-index: 3;
+    }
+    html[dir="ltr"] .lc-dots { transform: translateX(-50%); }
+    .lc-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.4);
+      border: none; cursor: pointer; padding: 0;
+      transition: background .2s, transform .2s;
+    }
+    .lc-dot.active { background: #e8a000; transform: scale(1.35); }
+    @media (max-width: 480px) {
+      .landing-carousel { margin-bottom: 22px; border-radius: 14px; }
+      .lc-caption { font-size: .85rem; bottom: 12px; }
+      .lc-nav { width: 32px; height: 32px; font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
@@ -90,6 +160,14 @@
     <h1 class="landing-title" id="landingWelcome">أهلاً بك</h1>
     <div class="landing-brand">Smart System</div>
     <div class="landing-dept" id="landingDept">الخاص بقسم ETS</div>
+
+    <div class="landing-carousel empty" id="landingCarousel" aria-label="معرض الصور">
+      <div class="lc-track" id="lcTrack"></div>
+      <button type="button" class="lc-nav lc-prev" id="lcPrev" aria-label="السابق">‹</button>
+      <button type="button" class="lc-nav lc-next" id="lcNext" aria-label="التالي">›</button>
+      <div class="lc-dots" id="lcDots"></div>
+    </div>
+
     <button class="landing-btn" onclick="enterSystem()" id="landingBtn">حجز غرفة الاجتماعات</button>
   </div>
 </div>
@@ -1066,10 +1144,88 @@ function showCancelSuccess(booking){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+/* ─── Landing Carousel ─── */
+let lcSlides = [];
+let lcIndex  = 0;
+let lcTimer  = null;
+const LC_INTERVAL = 5000;
+
+async function loadCarousel() {
+  try {
+    const res = await fetch('/api/carousel', { cache: 'no-store' });
+    if (!res.ok) return;
+    lcSlides = await res.json();
+  } catch { lcSlides = []; }
+  renderCarousel();
+}
+
+function renderCarousel() {
+  const wrap  = document.getElementById('landingCarousel');
+  const track = document.getElementById('lcTrack');
+  const dots  = document.getElementById('lcDots');
+  if (!wrap || !track || !dots) return;
+
+  if (!lcSlides.length) {
+    wrap.classList.add('empty');
+    track.innerHTML = '';
+    dots.innerHTML  = '';
+    if (lcTimer) { clearInterval(lcTimer); lcTimer = null; }
+    return;
+  }
+
+  wrap.classList.remove('empty');
+  track.innerHTML = lcSlides.map(s => {
+    const cap = s.caption ? `<div class="lc-caption">${escHtml(s.caption)}</div>` : '';
+    const safeSrc = String(s.src).replace(/"/g, '&quot;');
+    return `<div class="lc-slide" style="background-image:url('${safeSrc}')">${cap}</div>`;
+  }).join('');
+  dots.innerHTML = lcSlides.map((_, i) =>
+    `<button type="button" class="lc-dot${i===lcIndex?' active':''}" data-i="${i}" aria-label="صورة ${i+1}"></button>`
+  ).join('');
+  dots.querySelectorAll('.lc-dot').forEach(btn => {
+    btn.addEventListener('click', () => { lcGoTo(parseInt(btn.dataset.i, 10)); });
+  });
+  if (lcIndex >= lcSlides.length) lcIndex = 0;
+  applyLcOffset();
+  startLcTimer();
+}
+
+function applyLcOffset() {
+  const track = document.getElementById('lcTrack');
+  if (!track) return;
+  const rtl = document.documentElement.dir === 'rtl';
+  const pct = (rtl ? 1 : -1) * lcIndex * 100;
+  track.style.transform = `translateX(${pct}%)`;
+  document.querySelectorAll('#lcDots .lc-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === lcIndex);
+  });
+}
+
+function lcGoTo(i) {
+  if (!lcSlides.length) return;
+  lcIndex = ((i % lcSlides.length) + lcSlides.length) % lcSlides.length;
+  applyLcOffset();
+  startLcTimer();
+}
+function lcNext() { lcGoTo(lcIndex + 1); }
+function lcPrev() { lcGoTo(lcIndex - 1); }
+
+function startLcTimer() {
+  if (lcTimer) clearInterval(lcTimer);
+  if (lcSlides.length < 2) return;
+  lcTimer = setInterval(() => lcGoTo(lcIndex + 1), LC_INTERVAL);
+}
+
+document.getElementById('lcNext')?.addEventListener('click', lcNext);
+document.getElementById('lcPrev')?.addEventListener('click', lcPrev);
+document.getElementById('landingCarousel')?.addEventListener('mouseenter', () => { if (lcTimer) clearInterval(lcTimer); });
+document.getElementById('landingCarousel')?.addEventListener('mouseleave', startLcTimer);
+
 /* ─── Init ─── */
 loadRoomBookingDates('a');
 renderCalendar();
 applyTranslations();
+loadCarousel();
 // Float the landing icon after entrance animation finishes
 setTimeout(() => {
   const icon = document.querySelector('.landing-icon');
