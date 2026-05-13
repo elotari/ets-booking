@@ -24,12 +24,12 @@
       z-index: 9999; transition: opacity 0.55s ease;
     }
     #landingPage.fade-out { opacity: 0; pointer-events: none; }
-    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 460px; width: 100%; position: relative; z-index: 1; }
+    .landing-wrap { text-align: center; padding: 40px 24px; max-width: 760px; width: 100%; position: relative; z-index: 1; }
     .landing-badge {
       display: inline-block;
       background: rgba(232,160,0,.14); border: 1.5px solid rgba(232,160,0,.45);
       color: #e8a000; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px;
-      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 30px;
+      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 18px;
     }
     .landing-icon { font-size: 3.8rem; margin-bottom: 14px; line-height: 1; }
     .landing-title { font-size: 2.4rem; font-weight: 900; color: #fff; margin: 0 0 4px; line-height: 1.2; }
@@ -75,14 +75,14 @@
 
     /* ── Landing Carousel ── */
     .landing-carousel {
-      width: min(560px, 92vw);
-      margin: 0 auto 28px;
-      border-radius: 18px;
+      width: min(720px, 94vw);
+      margin: 0 auto 32px;
+      border-radius: 20px;
       overflow: hidden;
       position: relative;
       background: rgba(255,255,255,.05);
       border: 1.5px solid rgba(255,255,255,.18);
-      box-shadow: 0 12px 36px rgba(0,0,0,.35);
+      box-shadow: 0 18px 48px rgba(0,0,0,.45);
       aspect-ratio: 16 / 9;
     }
     .landing-carousel.empty { display: none; }
@@ -155,18 +155,18 @@
   <div class="landing-orb landing-orb-3"></div>
   <button class="landing-lang-btn" id="landingLangBtn" onclick="toggleLang()">EN</button>
   <div class="landing-wrap">
-    <div class="landing-badge">ETS Smart System</div>
-    <div class="landing-icon">🏢</div>
-    <h1 class="landing-title" id="landingWelcome">أهلاً بك</h1>
-    <div class="landing-brand">Smart System</div>
-    <div class="landing-dept" id="landingDept">الخاص بقسم ETS</div>
-
     <div class="landing-carousel empty" id="landingCarousel" aria-label="معرض الصور">
       <div class="lc-track" id="lcTrack"></div>
       <button type="button" class="lc-nav lc-prev" id="lcPrev" aria-label="السابق">‹</button>
       <button type="button" class="lc-nav lc-next" id="lcNext" aria-label="التالي">›</button>
       <div class="lc-dots" id="lcDots"></div>
     </div>
+
+    <div class="landing-badge">ETS Smart System</div>
+    <div class="landing-icon">🏢</div>
+    <h1 class="landing-title" id="landingWelcome">أهلاً بك</h1>
+    <div class="landing-brand">Smart System</div>
+    <div class="landing-dept" id="landingDept">الخاص بقسم ETS</div>
 
     <button class="landing-btn" onclick="enterSystem()" id="landingBtn">حجز غرفة الاجتماعات</button>
   </div>
