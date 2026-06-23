@@ -31,7 +31,8 @@
       "PowerShell($r = Get-Command railway -ErrorAction SilentlyContinue; if \\($r\\) { $r.Source } else { \"Railway CLI not installed\" })",
       "PowerShell(npm install -g @railway/cli 2>&1)",
       "PowerShell(tail -5)",
-      "PowerShell(railway --version)"
+      "PowerShell(railway --version)",
+      "Bash(npm uninstall *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\moham\\OneDrive\\Desktop\\ETS BOOKING SYSTEM"

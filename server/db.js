@@ -50,4 +50,28 @@ db.exec(`
   )
 `);
 
+// Modification requests: user asks to extend time or add services — reviewed by secretary
+try { db.exec('ALTER TABLE cancel_requests ADD COLUMN processed_at TEXT'); } catch {}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS modify_requests (
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id            INTEGER NOT NULL,
+    booking_ref           TEXT NOT NULL,
+    booking_room          TEXT NOT NULL,
+    booking_date          TEXT NOT NULL,
+    booking_start         TEXT NOT NULL,
+    booking_end           TEXT NOT NULL,
+    booking_name          TEXT NOT NULL,
+    requester_name        TEXT,
+    requested_add_minutes INTEGER DEFAULT 0,
+    requested_new_end     TEXT,
+    requested_services    TEXT,
+    reason                TEXT,
+    status                TEXT NOT NULL DEFAULT 'pending',
+    requested_at          TEXT NOT NULL,
+    processed_at          TEXT
+  )
+`);
+
 module.exports = db;

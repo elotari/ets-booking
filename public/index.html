@@ -18,26 +18,29 @@
 
     /* ── Landing Page ── */
     #landingPage {
-      position: fixed; inset: 0; overflow: hidden;
+      position: fixed; inset: 0; overflow-y: auto;
       background: linear-gradient(160deg, #061826 0%, #0f2a4a 45%, #1a4f8a 100%);
       display: flex; align-items: center; justify-content: center;
       z-index: 9999; transition: opacity 0.55s ease;
     }
     #landingPage.fade-out { opacity: 0; pointer-events: none; }
-    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 540px; width: 100%; position: relative; z-index: 1; }
-    /* move landing content slightly higher so primary action is visible on narrow/large monitors */
-    .landing-wrap { transform: translateY(-36%); }
+    /* Robust vertical centering: content stays centered on every monitor
+       height, and the primary "Book" button is always in view. */
+    .landing-wrap {
+      text-align: center; padding: 40px 32px; max-width: 540px; width: 100%;
+      position: relative; z-index: 1; margin: auto;
+    }
     .landing-orb { display: none; }
     .landing-badge {
       display: inline-block;
       background: rgba(232,160,0,.14); border: 1.5px solid rgba(232,160,0,.45);
       color: #e8a000; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px;
-      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 30px;
+      text-transform: uppercase; padding: 5px 18px; border-radius: 20px; margin-bottom: 24px;
     }
-    .landing-icon { font-size: 3.8rem; margin-bottom: 14px; line-height: 1; }
+    .landing-icon { font-size: 3.4rem; margin-bottom: 12px; line-height: 1; }
     .landing-title { font-size: 2.4rem; font-weight: 900; color: #fff; margin: 0 0 4px; line-height: 1.2; }
     .landing-brand { font-size: 1.65rem; font-weight: 700; color: #e8a000; margin: 0 0 8px; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
-    .landing-dept { font-size: 0.98rem; color: rgba(255,255,255,.6); margin: 0 0 44px; font-weight: 600; }
+    .landing-dept { font-size: 0.98rem; color: rgba(255,255,255,.6); margin: 0 0 32px; font-weight: 600; }
     .landing-btn {
       display: inline-block; background: linear-gradient(135deg,#1d5fa8,#2878cc);
       color: #fff; border: none; border-radius: 14px; padding: 18px 44px;
@@ -373,7 +376,7 @@
         </div>
         <div class="cancel-modal-body" id="editModalBody"></div>
         <div class="cancel-modal-foot">
-          <button class="btn-primary" id="editSubmitBtn" onclick="submitEditRequest()">${t('btn.edit')}</button>
+          <button class="btn-primary" id="editSubmitBtn" onclick="submitEditRequest()" data-i18n="modify.send">إرسال الطلب</button>
           <button class="btn-ghost" onclick="closeEditModal()" data-i18n="btn.close">إغلاق</button>
         </div>
       </div>
@@ -437,6 +440,11 @@ const TRANS = {
     'cancel.another':'← طلب إلغاء آخر','cancel.err_empid':'الرجاء إدخال رقمك الوظيفي',
     'cancel.err_server':'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
     'secretary_link':'دخول السكرتيرة',
+    'modify.modal_title':'تعديل الحجز','modify.send':'إرسال الطلب','modify.sending':'جارٍ الإرسال...',
+    'modify.req_btn':'تعديل الحجز','modify.add_mins':'إضافة وقت','modify.add_services':'إضافة خدمات',
+    'modify.notes':'ملاحظات','modify.no_change':'الرجاء إضافة وقت أو خدمة واحدة على الأقل',
+    'modify.sent':'تم إرسال طلب التعديل، بانتظار موافقة السكرتيرة',
+    'modify.mins_none':'بدون','modify.mins_30':'٣٠ دقيقة','modify.mins_60':'ساعة',
     'slot.booked':'محجوز','slot.available':'متاح',
     'rev.room':'القاعة','rev.date':'التاريخ','rev.start':'وقت البداية','rev.end':'وقت النهاية',
     'rev.duration':'المدة','rev.services':'الخدمات','rev.name':'الاسم','rev.empid':'رقم الوظيفي',
@@ -496,6 +504,11 @@ const TRANS = {
     'cancel.another':'→ Another Cancellation','cancel.err_empid':'Please enter your employee ID',
     'cancel.err_server':'Unable to connect to server. Please try again later.',
     'secretary_link':'Secretary Login',
+    'modify.modal_title':'Modify Booking','modify.send':'Send Request','modify.sending':'Sending...',
+    'modify.req_btn':'Modify','modify.add_mins':'Add time','modify.add_services':'Add services',
+    'modify.notes':'Notes','modify.no_change':'Please add time or at least one service',
+    'modify.sent':'Modification request sent, awaiting secretary approval',
+    'modify.mins_none':'None','modify.mins_30':'30 minutes','modify.mins_60':'1 hour',
     'slot.booked':'Booked','slot.available':'Available',
     'rev.room':'Room','rev.date':'Date','rev.start':'Start Time','rev.end':'End Time',
     'rev.duration':'Duration','rev.services':'Services','rev.name':'Name','rev.empid':'Employee ID',
@@ -1000,7 +1013,7 @@ function showCancelList(empId){
         <div style="font-size:.78rem;color:var(--slate);margin-top:2px;direction:ltr;">${escHtml(b.ref||'')}</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn-primary btn-sm" onclick="openEditModal(${i})">${t('btn.edit')}</button>
+        <button class="btn-primary btn-sm" onclick="openEditModal(${i})">${t('modify.req_btn')}</button>
         <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">${t('cancel.req_btn')}</button>
       </div>
     </div>`).join('');
@@ -1062,27 +1075,28 @@ function openEditModal(idx){
       <div style="font-size:.78rem;color:var(--slate);margin-top:4px;direction:ltr;">${escHtml(booking.ref||'')}</div>
     </div>
     <div class="form-group">
-      <label class="form-label">${currentLang==='en'?'Add minutes':'إضافة دقائق'}</label>
-      <select id="editExtraMins" class="form-select" style="max-width:160px;">
-        <option value="0">0</option>
-        <option value="30">30</option>
-        <option value="60">60</option>
+      <label class="form-label">${t('modify.add_mins')}</label>
+      <select id="editExtraMins" class="form-select" style="max-width:200px;">
+        <option value="0">${t('modify.mins_none')}</option>
+        <option value="30">${t('modify.mins_30')}</option>
+        <option value="60">${t('modify.mins_60')}</option>
       </select>
     </div>
     <div class="form-group">
-      <label class="form-label">${currentLang==='en'?'Add services':'إضافة خدمات'}</label>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <label><input type="checkbox" id="editSvcDrinks"> ${t('svc.drinks')}</label>
-        <label><input type="checkbox" id="editSvcCatering"> ${t('svc.catering')}</label>
+      <label class="form-label">${t('modify.add_services')}</label>
+      <div style="display:flex;gap:16px;margin-top:8px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="editSvcDrinks"> ${t('svc.drinks')}</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="editSvcCatering"> ${t('svc.catering')}</label>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">${currentLang==='en'?'Notes':'ملاحظات'}</label>
+      <label class="form-label">${t('modify.notes')}</label>
       <textarea id="editReason" class="form-textarea" style="min-height:60px;"></textarea>
     </div>
+    <div id="editModalAlert" class="alert alert-danger" style="display:none;margin-top:4px;"></div>
   `;
   document.getElementById('editSubmitBtn').disabled = false;
-  document.getElementById('editSubmitBtn').textContent = currentLang==='en'? 'Send request' : 'إرسال الطلب';
+  document.getElementById('editSubmitBtn').textContent = t('modify.send');
   document.getElementById('editModalOverlay').classList.add('open');
 }
 
@@ -1095,12 +1109,21 @@ function handleEditOverlayClick(e){ if(e.target===document.getElementById('editM
 async function submitEditRequest(){
   if(!selectedEditBooking) return;
   const btn = document.getElementById('editSubmitBtn');
+  const alertEl = document.getElementById('editModalAlert');
   const mins = Number(document.getElementById('editExtraMins').value || 0);
   const servicesArr = [];
   if(document.getElementById('editSvcDrinks').checked) servicesArr.push('drinks');
   if(document.getElementById('editSvcCatering').checked) servicesArr.push('catering');
   const reason = document.getElementById('editReason').value.trim();
-  btn.disabled = true; btn.textContent = currentLang==='en' ? 'Sending...' : 'جارٍ الإرسال...';
+
+  if(alertEl) alertEl.style.display = 'none';
+  // Must request at least one change (extra time or a service)
+  if(!mins && servicesArr.length === 0){
+    if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${t('modify.no_change')}</span>`; }
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = t('modify.sending');
   try {
     const res = await fetch('/api/modify-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       booking_id: selectedEditBooking.id,
@@ -1110,10 +1133,10 @@ async function submitEditRequest(){
       reason: reason || null
     })});
     const data = await res.json();
-    if(res.ok && data.success){ closeEditModal(); alert(currentLang==='en'?'Modification request sent':'تم إرسال طلب التعديل'); }
-    else { alert(data.error || t('err.server')); }
-  } catch(e){ alert(t('err.server')); }
-  btn.disabled = false; btn.textContent = currentLang==='en' ? 'Send request' : 'إرسال الطلب';
+    if(res.ok && data.success){ closeEditModal(); alert(t('modify.sent')); }
+    else if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${data.error || t('err.server')}</span>`; }
+  } catch(e){ if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${t('err.server')}</span>`; } }
+  btn.disabled = false; btn.textContent = t('modify.send');
 }
 
 async function submitCancelRequest(){
