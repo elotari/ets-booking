@@ -81,4 +81,15 @@ try { db.exec("ALTER TABLE modify_requests ADD COLUMN requested_new_start TEXT")
 try { db.exec("ALTER TABLE modify_requests ADD COLUMN requested_cancel INTEGER DEFAULT 0"); } catch {}
 // requested_services now means the FULL new service list (replace), not just additions.
 
+// Visitor suggestions for the official site (prototype feedback)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS feedback (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT,
+    message     TEXT NOT NULL,
+    lang        TEXT,
+    created_at  TEXT NOT NULL
+  )
+`);
+
 module.exports = db;

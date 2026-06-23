@@ -58,6 +58,17 @@
     }
     .landing-lang-btn:hover { background: rgba(255,255,255,.26); }
 
+    /* ── Landing prototype + suggestions box ── */
+    .landing-feedback {
+      margin-top: 30px; padding: 16px 20px; border-radius: 14px; cursor: pointer;
+      background: rgba(232,160,0,.10); border: 1.5px dashed rgba(232,160,0,.55);
+      transition: background .2s, transform .2s, border-color .2s;
+      max-width: 460px; margin-inline: auto;
+    }
+    .landing-feedback:hover { background: rgba(232,160,0,.18); transform: translateY(-2px); border-color: rgba(232,160,0,.8); }
+    .lf-note { font-size: 0.82rem; line-height: 1.65; color: rgba(255,255,255,.82); font-weight: 600; }
+    .lf-note::before { content: '💡 '; }
+
     /* ── Top Navigation Bar ── */
     .app-navbar {
       position: sticky; top: 0; z-index: 200;
@@ -152,6 +163,39 @@
     <div class="landing-brand">Smart System</div>
     <div class="landing-dept" id="landingDept">الخاص بقسم ETS</div>
     <button class="landing-btn" onclick="enterSystem()" id="landingBtn">حجز غرفة الاجتماعات</button>
+
+    <!-- Prototype + suggestions box -->
+    <div class="landing-feedback" id="feedbackBox" onclick="openFeedback()">
+      <div class="lf-note" id="feedbackNote">
+        هذا الموقع نسخة تجريبية مؤقتة (Prototype) ريثما يجهّز قسم تقنية المعلومات (IT) في KOC الموقع الرسمي. شاركنا ما تودّ رؤيته في النسخة الرسمية — اضغط هنا لإضافة اقتراحك.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback / Suggestions Modal -->
+<div class="cancel-modal-overlay" id="feedbackOverlay" onclick="handleFeedbackOverlayClick(event)">
+  <div class="cancel-modal" onclick="event.stopPropagation()">
+    <div class="cancel-modal-head">
+      <h3 id="feedbackTitle">اقتراحات لتطوير الموقع</h3>
+      <button class="drawer-close" onclick="closeFeedback()">✕</button>
+    </div>
+    <div class="cancel-modal-body">
+      <p id="feedbackIntro" style="font-size:.86rem;color:var(--muted);margin-bottom:14px;line-height:1.6;"></p>
+      <div class="form-group">
+        <label class="form-label" id="feedbackNameLabel">الاسم (اختياري)</label>
+        <input class="form-input" id="feedbackName" type="text" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="feedbackMsgLabel">اقتراحك / ملاحظتك</label>
+        <textarea class="form-textarea" id="feedbackMsg" style="min-height:110px;"></textarea>
+      </div>
+      <div id="feedbackAlert" class="alert" style="display:none;"></div>
+    </div>
+    <div class="cancel-modal-foot">
+      <button class="btn-primary" id="feedbackSubmitBtn" onclick="submitFeedback()">إرسال</button>
+      <button class="btn-ghost" onclick="closeFeedback()" data-i18n="btn.close">إغلاق</button>
+    </div>
   </div>
 </div>
 
@@ -429,21 +473,21 @@
       <button class="btn-ghost" onclick="closeCancelModal()" data-i18n="btn.close">إغلاق</button>
     </div>
   </div>
+</div>
 
-    <!-- Edit Modal -->
-    <div class="cancel-modal-overlay" id="editModalOverlay" onclick="handleEditOverlayClick(event)">
-      <div class="cancel-modal edit-modal-wide" onclick="event.stopPropagation()">
-        <div class="cancel-modal-head">
-          <h3 data-i18n="modify.modal_title">تعديل الحجز</h3>
-          <button class="drawer-close" onclick="closeEditModal()">✕</button>
-        </div>
-        <div class="cancel-modal-body" id="editModalBody"></div>
-        <div class="cancel-modal-foot">
-          <button class="btn-primary" id="editSubmitBtn" onclick="submitEditRequest()" data-i18n="modify.send">إرسال الطلب</button>
-          <button class="btn-ghost" onclick="closeEditModal()" data-i18n="btn.close">إغلاق</button>
-        </div>
-      </div>
+<!-- Edit Modal (full modify) — standalone overlay -->
+<div class="cancel-modal-overlay" id="editModalOverlay" onclick="handleEditOverlayClick(event)">
+  <div class="cancel-modal edit-modal-wide" onclick="event.stopPropagation()">
+    <div class="cancel-modal-head">
+      <h3 data-i18n="modify.modal_title">تعديل الحجز</h3>
+      <button class="drawer-close" onclick="closeEditModal()">✕</button>
     </div>
+    <div class="cancel-modal-body" id="editModalBody"></div>
+    <div class="cancel-modal-foot">
+      <button class="btn-primary" id="editSubmitBtn" onclick="submitEditRequest()" data-i18n="modify.send">إرسال الطلب</button>
+      <button class="btn-ghost" onclick="closeEditModal()" data-i18n="btn.close">إغلاق</button>
+    </div>
+  </div>
 </div>
 
 <!-- Secretary link -->
@@ -520,6 +564,12 @@ const TRANS = {
     'cancel.ref':'رقم المرجع','cancel.booking_name':'الاسم','cancel.booking_date':'التاريخ',
     'cancel.booking_time':'الوقت','cancel.booking_subject':'الموضوع',
     'lang_toggle':'EN', 'back_home':'الرئيسية',
+    'fb.note':'هذا الموقع نسخة تجريبية مؤقتة (Prototype) ريثما يجهّز قسم تقنية المعلومات (IT) في KOC الموقع الرسمي. شاركنا ما تودّ رؤيته في النسخة الرسمية — اضغط هنا لإضافة اقتراحك.',
+    'fb.title':'اقتراحات لتطوير الموقع',
+    'fb.intro':'ملاحظاتك تساعدنا في تصميم النسخة الرسمية. اكتب أي ميزة أو تحسين تتمنى رؤيته.',
+    'fb.name':'الاسم (اختياري)','fb.msg':'اقتراحك / ملاحظتك',
+    'fb.send':'إرسال','fb.sending':'جارٍ الإرسال...',
+    'fb.empty':'الرجاء كتابة اقتراحك أولاً','fb.sent':'شكراً لك! تم إرسال اقتراحك بنجاح.',
   },
   en: {
     'landing.welcome':'Welcome','landing.dept':'ETS Department','landing.btn':'Book Meeting Room',
@@ -587,6 +637,12 @@ const TRANS = {
     'cancel.ref':'Reference','cancel.booking_name':'Name','cancel.booking_date':'Date',
     'cancel.booking_time':'Time','cancel.booking_subject':'Subject',
     'lang_toggle':'عربي', 'back_home':'Home',
+    'fb.note':'This site is a temporary prototype while the IT department at KOC prepares the official site. Tell us what you\'d like to see in the official version — click here to add your suggestion.',
+    'fb.title':'Suggestions to Improve the Site',
+    'fb.intro':'Your feedback helps us shape the official version. Tell us about any feature or improvement you\'d like to see.',
+    'fb.name':'Name (optional)','fb.msg':'Your suggestion / feedback',
+    'fb.send':'Send','fb.sending':'Sending...',
+    'fb.empty':'Please write your suggestion first','fb.sent':'Thank you! Your suggestion was sent successfully.',
   }
 };
 
@@ -625,6 +681,15 @@ function applyTranslations() {
   document.getElementById('landingWelcome').textContent = t('landing.welcome');
   document.getElementById('landingDept').textContent    = t('landing.dept');
   document.getElementById('landingBtn').textContent     = t('landing.btn');
+  // feedback box + modal
+  const fbNote = document.getElementById('feedbackNote');
+  if (fbNote) fbNote.textContent = t('fb.note');
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('feedbackTitle', t('fb.title'));
+  setTxt('feedbackIntro', t('fb.intro'));
+  setTxt('feedbackNameLabel', t('fb.name'));
+  setTxt('feedbackMsgLabel', t('fb.msg'));
+  setTxt('feedbackSubmitBtn', t('fb.send'));
   // placeholders
   document.getElementById('fName').placeholder    = t('ph.name');
   document.getElementById('fEmpId').placeholder   = t('ph.empid');
@@ -669,6 +734,58 @@ function backToHome() {
   const landing = document.getElementById('landingPage');
   landing.style.display = 'flex';
   landing.classList.remove('fade-out');
+}
+
+/* ─── Feedback / Suggestions ─── */
+function openFeedback() {
+  const a = document.getElementById('feedbackAlert');
+  if (a) a.style.display = 'none';
+  const btn = document.getElementById('feedbackSubmitBtn');
+  if (btn) { btn.disabled = false; btn.textContent = t('fb.send'); }
+  document.getElementById('feedbackOverlay').classList.add('open');
+}
+function closeFeedback() {
+  document.getElementById('feedbackOverlay').classList.remove('open');
+}
+function handleFeedbackOverlayClick(e) {
+  if (e.target === document.getElementById('feedbackOverlay')) closeFeedback();
+}
+async function submitFeedback() {
+  const name = document.getElementById('feedbackName').value.trim();
+  const msg  = document.getElementById('feedbackMsg').value.trim();
+  const btn  = document.getElementById('feedbackSubmitBtn');
+  const alertEl = document.getElementById('feedbackAlert');
+  alertEl.style.display = 'none';
+  if (!msg) {
+    alertEl.className = 'alert alert-danger'; alertEl.style.display = 'flex';
+    alertEl.innerHTML = `<span>⚠️</span><span>${t('fb.empty')}</span>`;
+    return;
+  }
+  btn.disabled = true; btn.textContent = t('fb.sending');
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name || null, message: msg, lang: currentLang })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      document.getElementById('feedbackName').value = '';
+      document.getElementById('feedbackMsg').value = '';
+      alertEl.className = 'alert alert-success'; alertEl.style.display = 'flex';
+      alertEl.innerHTML = `<span>✅</span><span>${t('fb.sent')}</span>`;
+      btn.textContent = t('fb.send');
+      setTimeout(closeFeedback, 1600);
+    } else {
+      alertEl.className = 'alert alert-danger'; alertEl.style.display = 'flex';
+      alertEl.innerHTML = `<span>⚠️</span><span>${data.error || t('err.server')}</span>`;
+      btn.textContent = t('fb.send');
+    }
+  } catch (e) {
+    alertEl.className = 'alert alert-danger'; alertEl.style.display = 'flex';
+    alertEl.innerHTML = `<span>⚠️</span><span>${t('err.server')}</span>`;
+    btn.textContent = t('fb.send');
+  }
+  btn.disabled = false;
 }
 
 /* ─── Shared helpers ─── */
