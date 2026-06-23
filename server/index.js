@@ -5,6 +5,7 @@ const crypto  = require('crypto');
 const { addClient, removeClient } = require('./events');
 const bookingsRouter       = require('./routes/bookings');
 const cancelRequestsRouter = require('./routes/cancelRequests');
+const modifyRequestsRouter = require('./routes/modifyRequests');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api/bookings',        bookingsRouter);
 app.use('/api/cancel-requests', cancelRequestsRouter);
+app.use('/api/modify-requests', modifyRequestsRouter);
 
 // SSE — real-time push to all open secretary dashboards
 app.get('/api/events', (req, res) => {

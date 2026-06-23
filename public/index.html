@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,7 +24,10 @@
       z-index: 9999; transition: opacity 0.55s ease;
     }
     #landingPage.fade-out { opacity: 0; pointer-events: none; }
-    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 460px; width: 100%; position: relative; z-index: 1; }
+    .landing-wrap { text-align: center; padding: 48px 32px; max-width: 540px; width: 100%; position: relative; z-index: 1; }
+    /* move landing content slightly higher so primary action is visible on narrow/large monitors */
+    .landing-wrap { transform: translateY(-36%); }
+    .landing-orb { display: none; }
     .landing-badge {
       display: inline-block;
       background: rgba(232,160,0,.14); border: 1.5px solid rgba(232,160,0,.45);
@@ -360,6 +363,21 @@
       <button class="btn-ghost" onclick="closeCancelModal()" data-i18n="btn.close">إغلاق</button>
     </div>
   </div>
+
+    <!-- Edit Modal -->
+    <div class="cancel-modal-overlay" id="editModalOverlay" onclick="handleEditOverlayClick(event)">
+      <div class="cancel-modal" onclick="event.stopPropagation()">
+        <div class="cancel-modal-head">
+          <h3 data-i18n="modify.modal_title">تعديل الحجز</h3>
+          <button class="drawer-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <div class="cancel-modal-body" id="editModalBody"></div>
+        <div class="cancel-modal-foot">
+          <button class="btn-primary" id="editSubmitBtn" onclick="submitEditRequest()">${t('btn.edit')}</button>
+          <button class="btn-ghost" onclick="closeEditModal()" data-i18n="btn.close">إغلاق</button>
+        </div>
+      </div>
+    </div>
 </div>
 
 <!-- Secretary link -->
@@ -490,7 +508,7 @@ const TRANS = {
   }
 };
 
-let currentLang = 'ar';
+let currentLang = 'en';
 function t(k) { return (TRANS[currentLang]||{})[k] || (TRANS.ar||{})[k] || k; }
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -981,7 +999,10 @@ function showCancelList(empId){
         <div style="font-size:.82rem;color:var(--muted);margin-top:3px;">${formatDate(b.date)} · ${b.start_time}–${b.end_time}</div>
         <div style="font-size:.78rem;color:var(--slate);margin-top:2px;direction:ltr;">${escHtml(b.ref||'')}</div>
       </div>
-      <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">${t('cancel.req_btn')}</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn-primary btn-sm" onclick="openEditModal(${i})">${t('btn.edit')}</button>
+        <button class="btn-danger btn-sm" onclick="openCancelModal(${i})">${t('cancel.req_btn')}</button>
+      </div>
     </div>`).join('');
 }
 
@@ -1027,6 +1048,73 @@ function closeCancelModal(){
   selectedCancelBooking=null;
 }
 function handleCancelOverlayClick(e){ if(e.target===document.getElementById('cancelModalOverlay')) closeCancelModal(); }
+
+// --- Edit modal functions ---
+let selectedEditBooking = null;
+function openEditModal(idx){
+  const booking = cancelEmployeeBookings[idx];
+  if(!booking) return;
+  selectedEditBooking = booking;
+  document.getElementById('editModalBody').innerHTML = `
+    <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:14px;margin-bottom:12px;">
+      <div style="font-weight:700;color:var(--blue-dark);">${escHtml(booking.subject||'—')}</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-top:4px;">${formatDate(booking.date)} · ${booking.start_time}–${booking.end_time}</div>
+      <div style="font-size:.78rem;color:var(--slate);margin-top:4px;direction:ltr;">${escHtml(booking.ref||'')}</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">${currentLang==='en'?'Add minutes':'إضافة دقائق'}</label>
+      <select id="editExtraMins" class="form-select" style="max-width:160px;">
+        <option value="0">0</option>
+        <option value="30">30</option>
+        <option value="60">60</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">${currentLang==='en'?'Add services':'إضافة خدمات'}</label>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <label><input type="checkbox" id="editSvcDrinks"> ${t('svc.drinks')}</label>
+        <label><input type="checkbox" id="editSvcCatering"> ${t('svc.catering')}</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">${currentLang==='en'?'Notes':'ملاحظات'}</label>
+      <textarea id="editReason" class="form-textarea" style="min-height:60px;"></textarea>
+    </div>
+  `;
+  document.getElementById('editSubmitBtn').disabled = false;
+  document.getElementById('editSubmitBtn').textContent = currentLang==='en'? 'Send request' : 'إرسال الطلب';
+  document.getElementById('editModalOverlay').classList.add('open');
+}
+
+function closeEditModal(){
+  document.getElementById('editModalOverlay').classList.remove('open');
+  selectedEditBooking = null;
+}
+function handleEditOverlayClick(e){ if(e.target===document.getElementById('editModalOverlay')) closeEditModal(); }
+
+async function submitEditRequest(){
+  if(!selectedEditBooking) return;
+  const btn = document.getElementById('editSubmitBtn');
+  const mins = Number(document.getElementById('editExtraMins').value || 0);
+  const servicesArr = [];
+  if(document.getElementById('editSvcDrinks').checked) servicesArr.push('drinks');
+  if(document.getElementById('editSvcCatering').checked) servicesArr.push('catering');
+  const reason = document.getElementById('editReason').value.trim();
+  btn.disabled = true; btn.textContent = currentLang==='en' ? 'Sending...' : 'جارٍ الإرسال...';
+  try {
+    const res = await fetch('/api/modify-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      booking_id: selectedEditBooking.id,
+      requester_name: selectedEditBooking.name,
+      additional_minutes: mins || 0,
+      added_services: servicesArr,
+      reason: reason || null
+    })});
+    const data = await res.json();
+    if(res.ok && data.success){ closeEditModal(); alert(currentLang==='en'?'Modification request sent':'تم إرسال طلب التعديل'); }
+    else { alert(data.error || t('err.server')); }
+  } catch(e){ alert(t('err.server')); }
+  btn.disabled = false; btn.textContent = currentLang==='en' ? 'Send request' : 'إرسال الطلب';
+}
 
 async function submitCancelRequest(){
   if(!selectedCancelBooking) return;
