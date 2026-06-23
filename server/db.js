@@ -74,4 +74,11 @@ db.exec(`
   )
 `);
 
+// Full-edit support: a modify request can now change date/time/services
+// entirely, or request a full cancellation. Old columns kept for back-compat.
+try { db.exec("ALTER TABLE modify_requests ADD COLUMN requested_new_date TEXT"); } catch {}
+try { db.exec("ALTER TABLE modify_requests ADD COLUMN requested_new_start TEXT"); } catch {}
+try { db.exec("ALTER TABLE modify_requests ADD COLUMN requested_cancel INTEGER DEFAULT 0"); } catch {}
+// requested_services now means the FULL new service list (replace), not just additions.
+
 module.exports = db;

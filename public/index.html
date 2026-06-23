@@ -58,26 +58,81 @@
     }
     .landing-lang-btn:hover { background: rgba(255,255,255,.26); }
 
-    /* ── Main app lang toggle ── */
-    .main-lang-btn {
-      position: fixed; bottom: 20px; inset-inline-start: 20px;
-      background: var(--blue-mid,#1d5fa8); color: #fff; border: none;
-      border-radius: 24px; padding: 12px 28px; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; z-index: 100; box-shadow: 0 4px 18px rgba(0,0,0,.25);
-      font-family: inherit; letter-spacing: 1.5px; transition: background .2s;
+    /* ── Top Navigation Bar ── */
+    .app-navbar {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg,#0f2a4a,#1a4f8a);
+      box-shadow: 0 2px 14px rgba(0,0,0,.22);
     }
-    .main-lang-btn:hover { background: #2878cc; }
+    .nav-brand {
+      color: #fff; font-weight: 800; font-size: 1.02rem; letter-spacing: .5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 22px; padding: 9px 20px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background .2s, border-color .2s;
+      white-space: nowrap;
+    }
+    .nav-back {
+      background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.28);
+    }
+    .nav-back:hover { background: rgba(255,255,255,.22); }
+    .nav-lang {
+      background: var(--accent,#e8a000); color: #0f2a4a; border: none; letter-spacing: 1px;
+    }
+    .nav-lang:hover { background: #f2af1f; }
+    @media (max-width: 480px) {
+      .nav-brand { display: none; }
+      .nav-btn { padding: 8px 16px; font-size: 0.84rem; }
+    }
 
-    /* ── Main app back-to-home button ── */
-    .main-back-btn {
-      position: fixed; top: 20px; inset-inline-start: 20px;
-      background: rgba(15,42,74,.82); color: #fff; border: 1.5px solid rgba(255,255,255,.2);
-      border-radius: 24px; padding: 12px 28px; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; z-index: 100; box-shadow: 0 4px 18px rgba(0,0,0,.22);
-      font-family: inherit; letter-spacing: 1px; transition: background .2s, border-color .2s;
-      backdrop-filter: blur(6px);
+    /* ── Wide edit modal (full modify with calendar) ── */
+    .edit-modal-wide { max-width: 620px; width: 96vw; }
+    .edit-section { margin-bottom: 18px; }
+    .edit-section-title {
+      font-size: 0.9rem; font-weight: 800; color: var(--blue-dark,#0f2a4a);
+      margin: 0 0 10px; display: flex; align-items: center; gap: 8px;
     }
-    .main-back-btn:hover { background: #0f2a4a; border-color: rgba(255,255,255,.38); }
+    .edit-cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .edit-mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .edit-mini-cal .mc-head { text-align: center; font-size: 0.66rem; font-weight: 700; color: var(--slate,#64748b); padding: 2px 0; }
+    .edit-mini-cal .mc-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border-light,#d7e3f2); background: #fff; border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer; position: relative;
+      transition: background .12s, border-color .12s;
+    }
+    .edit-mini-cal .mc-day:hover:not(.disabled):not(.empty) { border-color: var(--blue-mid,#1d5fa8); }
+    .edit-mini-cal .mc-day.disabled { color: #c7d2e0; cursor: not-allowed; background: #f6f9fd; }
+    .edit-mini-cal .mc-day.empty { border-color: transparent; background: transparent; cursor: default; }
+    .edit-mini-cal .mc-day.selected { background: var(--blue-mid,#1d5fa8); color: #fff; border-color: var(--blue-mid,#1d5fa8); }
+    .edit-mini-cal .mc-day.today { font-weight: 900; color: var(--blue-mid,#1d5fa8); }
+    .edit-mini-cal .mc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent,#e8a000); position: absolute; bottom: 3px; }
+    .edit-times { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .edit-time-col-label { font-size: 0.78rem; font-weight: 700; color: var(--slate,#64748b); margin-bottom: 6px; }
+    .edit-time-list { max-height: 168px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-inline-end: 4px; }
+    .edit-slot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px; border: 1.5px solid var(--border-light,#d7e3f2); border-radius: 7px;
+      font-size: 0.8rem; cursor: pointer; background: #fff; transition: border-color .12s, background .12s;
+    }
+    .edit-slot:hover:not(.booked) { border-color: var(--blue-mid,#1d5fa8); }
+    .edit-slot.selected { background: var(--blue-mid,#1d5fa8); color: #fff; border-color: var(--blue-mid,#1d5fa8); }
+    .edit-slot.booked { background: #fdecec; border-color: #f3c9c9; color: #b91c1c; cursor: not-allowed; }
+    .edit-slot .es-badge { font-size: 0.66rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+    .edit-slot .es-avail { background: #e6f6ec; color: #15803d; }
+    .edit-slot .es-booked { background: #fbd9d9; color: #b91c1c; }
+    .edit-slot.selected .es-badge { background: rgba(255,255,255,.25); color: #fff; }
+    .edit-svc-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .edit-svc-row label { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+    .edit-danger-zone {
+      margin-top: 10px; padding: 12px 14px; border: 1.5px dashed #f3c9c9;
+      border-radius: 10px; background: #fef6f6;
+    }
+    .edit-danger-zone label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.88rem; font-weight: 700; color: #b91c1c; }
   </style>
 </head>
 <body>
@@ -104,14 +159,22 @@
      MAIN APP
 ══════════════════════════════════════ -->
 <div id="mainApp" style="display:none;">
-<button class="main-back-btn" id="mainBackBtn" onclick="backToHome()">🏠 <span id="mainBackLabel">الرئيسية</span></button>
-<button class="main-lang-btn" id="mainLangBtn" onclick="toggleLang()">EN</button>
+
+<!-- ── Top Navigation Bar ── -->
+<nav class="app-navbar">
+  <button class="nav-btn nav-back" id="mainBackBtn" onclick="backToHome()">
+    <span class="nav-ico">🏠</span><span id="mainBackLabel">الرئيسية</span>
+  </button>
+  <div class="nav-brand">ETS Smart System</div>
+  <button class="nav-btn nav-lang" id="mainLangBtn" onclick="toggleLang()">EN</button>
+</nav>
+
 <div class="page-wrapper">
 
   <!-- Mode Toggle Tabs -->
   <div class="mode-tabs">
     <button id="tabBook" class="mode-tab active" onclick="switchMode('book')" data-i18n="tab.book">📅 حجز جديد</button>
-    <button id="tabCancel" class="mode-tab" onclick="switchMode('cancel')" data-i18n="tab.cancel">🗑️ إلغاء حجز</button>
+    <button id="tabCancel" class="mode-tab" onclick="switchMode('cancel')" data-i18n="tab.cancel">🗑️ تعديل أو إلغاء حجز</button>
   </div>
 
   <!-- ═══ BOOK SECTION ═══ -->
@@ -288,7 +351,7 @@
           <div style="font-size:.88rem;color:var(--muted);margin-bottom:16px;" data-i18n="conf.ref_label">رقم مرجع الحجز الخاص بك</div>
           <div class="confirm-ref" id="confirmRef"></div>
           <div style="font-size:.82rem;color:var(--muted);margin-bottom:28px;" data-i18n="conf.ref_hint">احتفظ بهذا الرقم للرجوع إليه لاحقاً</div>
-          <div id="confirmSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
+          <div id="confirmSummary" style="text-align:start;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
           <button class="btn-primary" onclick="resetApp()" style="min-width:180px;" data-i18n="conf.new">← حجز آخر</button>
         </div>
       </div>
@@ -342,7 +405,7 @@
           <div class="confirm-icon">📨</div>
           <div style="font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:8px;" data-i18n="cancel.success_msg">تم إرسال طلب الإلغاء بنجاح!</div>
           <div style="font-size:.88rem;color:var(--muted);margin-bottom:16px;" data-i18n="cancel.success_note">ستقوم السكرتيرة بمراجعة طلبك وتأكيد الإلغاء</div>
-          <div id="cancelSuccessSummary" style="text-align:right;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
+          <div id="cancelSuccessSummary" style="text-align:start;background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:16px;margin-bottom:24px;font-size:.85rem;"></div>
           <button class="btn-primary" onclick="showCancelLookup()" style="min-width:180px;" data-i18n="cancel.another">← طلب إلغاء آخر</button>
         </div>
       </div>
@@ -369,7 +432,7 @@
 
     <!-- Edit Modal -->
     <div class="cancel-modal-overlay" id="editModalOverlay" onclick="handleEditOverlayClick(event)">
-      <div class="cancel-modal" onclick="event.stopPropagation()">
+      <div class="cancel-modal edit-modal-wide" onclick="event.stopPropagation()">
         <div class="cancel-modal-head">
           <h3 data-i18n="modify.modal_title">تعديل الحجز</h3>
           <button class="drawer-close" onclick="closeEditModal()">✕</button>
@@ -395,7 +458,7 @@
 const TRANS = {
   ar: {
     'landing.welcome':'أهلاً بك','landing.dept':'الخاص بقسم ETS','landing.btn':'حجز غرفة الاجتماعات',
-    'tab.book':'📅 حجز جديد','tab.cancel':'🗑️ إلغاء حجز',
+    'tab.book':'📅 حجز جديد','tab.cancel':'✏️ تعديل أو إلغاء حجز',
     'step.1':'التاريخ والوقت','step.2':'الخدمات','step.3':'بياناتك','step.4':'المراجعة',
     'p1.title':'حجز قاعة الاجتماعات','p1.subtitle':'اختر التاريخ والوقت المناسب',
     'p1.sec1':'اختر التاريخ','p1.sec2':'اختر الوقت',
@@ -426,9 +489,9 @@ const TRANS = {
     'err.empid':'الرجاء إدخال رقمك الوظيفي','err.dept':'الرجاء اختيار القسم',
     'err.dept_other':'الرجاء إدخال اسم القسم','err.subject':'الرجاء إدخال موضوع الاجتماع',
     'err.email':'الرجاء إدخال البريد الإلكتروني','err.server':'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
-    'cancel.title':'إلغاء حجز','cancel.subtitle':'أدخل رقمك الوظيفي لعرض حجوزاتك',
+    'cancel.title':'تعديل أو إلغاء حجز','cancel.subtitle':'أدخل رقمك الوظيفي لعرض حجوزاتك',
     'cancel.sec1':'رقم الوظيفي','cancel.search':'بحث ←','cancel.searching':'جارٍ البحث...',
-    'cancel.list_title':'حجوزاتك','cancel.change':'→ تغيير رقم الوظيفي',
+    'cancel.list_title':'حجوزاتك — للتعديل أو الإلغاء','cancel.change':'→ تغيير رقم الوظيفي',
     'cancel.no_bookings':'لا توجد حجوزات قادمة مرتبطة بهذا الرقم الوظيفي',
     'cancel.req_btn':'طلب إلغاء','cancel.modal_title':'طلب إلغاء الحجز',
     'cancel.reason_label':'سبب الإلغاء (اختياري)',
@@ -440,11 +503,14 @@ const TRANS = {
     'cancel.another':'← طلب إلغاء آخر','cancel.err_empid':'الرجاء إدخال رقمك الوظيفي',
     'cancel.err_server':'تعذّر الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
     'secretary_link':'دخول السكرتيرة',
-    'modify.modal_title':'تعديل الحجز','modify.send':'إرسال الطلب','modify.sending':'جارٍ الإرسال...',
+    'modify.modal_title':'تعديل الحجز','modify.send':'إرسال طلب التعديل','modify.sending':'جارٍ الإرسال...',
     'modify.req_btn':'تعديل الحجز','modify.add_mins':'إضافة وقت','modify.add_services':'إضافة خدمات',
-    'modify.notes':'ملاحظات','modify.no_change':'الرجاء إضافة وقت أو خدمة واحدة على الأقل',
+    'modify.notes':'ملاحظات (اختياري)','modify.no_change':'لم تقم بأي تغيير على الحجز',
     'modify.sent':'تم إرسال طلب التعديل، بانتظار موافقة السكرتيرة',
     'modify.mins_none':'بدون','modify.mins_30':'٣٠ دقيقة','modify.mins_60':'ساعة',
+    'modify.current':'الحجز الحالي','modify.new_date':'اختر التاريخ الجديد','modify.new_time':'اختر الوقت الجديد',
+    'modify.services':'الخدمات','modify.cancel_instead':'أريد إلغاء الحجز بالكامل بدلاً من تعديله',
+    'modify.cancel_send':'إرسال طلب الإلغاء',
     'slot.booked':'محجوز','slot.available':'متاح',
     'rev.room':'القاعة','rev.date':'التاريخ','rev.start':'وقت البداية','rev.end':'وقت النهاية',
     'rev.duration':'المدة','rev.services':'الخدمات','rev.name':'الاسم','rev.empid':'رقم الوظيفي',
@@ -457,7 +523,7 @@ const TRANS = {
   },
   en: {
     'landing.welcome':'Welcome','landing.dept':'ETS Department','landing.btn':'Book Meeting Room',
-    'tab.book':'📅 New Booking','tab.cancel':'🗑️ Cancel Booking',
+    'tab.book':'📅 New Booking','tab.cancel':'✏️ Modify or Cancel',
     'step.1':'Date & Time','step.2':'Services','step.3':'Your Details','step.4':'Review',
     'p1.title':'Meeting Room Booking','p1.subtitle':'Select your preferred date and time',
     'p1.sec1':'Select Date','p1.sec2':'Select Time',
@@ -490,9 +556,9 @@ const TRANS = {
     'err.subject':'Please enter the meeting subject',
     'err.email':'Please enter your email address',
     'err.server':'Unable to connect to server. Please try again later.',
-    'cancel.title':'Cancel Booking','cancel.subtitle':'Enter your employee ID to view your bookings',
+    'cancel.title':'Modify or Cancel Booking','cancel.subtitle':'Enter your employee ID to view your bookings',
     'cancel.sec1':'Employee ID','cancel.search':'Search →','cancel.searching':'Searching...',
-    'cancel.list_title':'Your Bookings','cancel.change':'← Change Employee ID',
+    'cancel.list_title':'Your Bookings — to Modify or Cancel','cancel.change':'← Change Employee ID',
     'cancel.no_bookings':'No upcoming bookings found for this employee ID',
     'cancel.req_btn':'Request Cancellation','cancel.modal_title':'Request Booking Cancellation',
     'cancel.reason_label':'Reason for cancellation (optional)',
@@ -504,11 +570,14 @@ const TRANS = {
     'cancel.another':'→ Another Cancellation','cancel.err_empid':'Please enter your employee ID',
     'cancel.err_server':'Unable to connect to server. Please try again later.',
     'secretary_link':'Secretary Login',
-    'modify.modal_title':'Modify Booking','modify.send':'Send Request','modify.sending':'Sending...',
+    'modify.modal_title':'Modify Booking','modify.send':'Send Modification Request','modify.sending':'Sending...',
     'modify.req_btn':'Modify','modify.add_mins':'Add time','modify.add_services':'Add services',
-    'modify.notes':'Notes','modify.no_change':'Please add time or at least one service',
+    'modify.notes':'Notes (optional)','modify.no_change':'You haven\'t changed anything',
     'modify.sent':'Modification request sent, awaiting secretary approval',
     'modify.mins_none':'None','modify.mins_30':'30 minutes','modify.mins_60':'1 hour',
+    'modify.current':'Current booking','modify.new_date':'Select new date','modify.new_time':'Select new time',
+    'modify.services':'Services','modify.cancel_instead':'I want to cancel the booking entirely instead of modifying it',
+    'modify.cancel_send':'Send Cancellation Request',
     'slot.booked':'Booked','slot.available':'Available',
     'rev.room':'Room','rev.date':'Date','rev.start':'Start Time','rev.end':'End Time',
     'rev.duration':'Duration','rev.services':'Services','rev.name':'Name','rev.empid':'Employee ID',
@@ -1062,47 +1131,232 @@ function closeCancelModal(){
 }
 function handleCancelOverlayClick(e){ if(e.target===document.getElementById('cancelModalOverlay')) closeCancelModal(); }
 
-// --- Edit modal functions ---
+// --- Full Edit modal: change date/time/services or cancel, reviewed by secretary ---
 let selectedEditBooking = null;
-function openEditModal(idx){
+const editState = {
+  booking:null, date:null, startTime:null, endTime:null, services:[],
+  bookingsForDate:[], datesWithBookings:new Set(),
+  calYear:new Date().getFullYear(), calMonth:new Date().getMonth(),
+  cancel:false,
+};
+
+async function openEditModal(idx){
   const booking = cancelEmployeeBookings[idx];
   if(!booking) return;
   selectedEditBooking = booking;
-  document.getElementById('editModalBody').innerHTML = `
-    <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:14px;margin-bottom:12px;">
-      <div style="font-weight:700;color:var(--blue-dark);">${escHtml(booking.subject||'—')}</div>
-      <div style="font-size:.82rem;color:var(--muted);margin-top:4px;">${formatDate(booking.date)} · ${booking.start_time}–${booking.end_time}</div>
-      <div style="font-size:.78rem;color:var(--slate);margin-top:4px;direction:ltr;">${escHtml(booking.ref||'')}</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">${t('modify.add_mins')}</label>
-      <select id="editExtraMins" class="form-select" style="max-width:200px;">
-        <option value="0">${t('modify.mins_none')}</option>
-        <option value="30">${t('modify.mins_30')}</option>
-        <option value="60">${t('modify.mins_60')}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">${t('modify.add_services')}</label>
-      <div style="display:flex;gap:16px;margin-top:8px;">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="editSvcDrinks"> ${t('svc.drinks')}</label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="editSvcCatering"> ${t('svc.catering')}</label>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">${t('modify.notes')}</label>
-      <textarea id="editReason" class="form-textarea" style="min-height:60px;"></textarea>
-    </div>
-    <div id="editModalAlert" class="alert alert-danger" style="display:none;margin-top:4px;"></div>
-  `;
+  let svcs=[]; try{ svcs=JSON.parse(booking.services||'[]'); }catch(e){ svcs=Array.isArray(booking.services)?booking.services:[]; }
+  editState.booking = booking;
+  editState.date = booking.date;
+  editState.startTime = booking.start_time;
+  editState.endTime = booking.end_time;
+  editState.services = [...svcs];
+  editState.cancel = false;
+  const [y,m] = booking.date.split('-').map(Number);
+  editState.calYear = y; editState.calMonth = m-1;
+  editState.bookingsForDate = [];
+  editState.datesWithBookings = new Set();
+
+  renderEditModal();
   document.getElementById('editSubmitBtn').disabled = false;
   document.getElementById('editSubmitBtn').textContent = t('modify.send');
   document.getElementById('editModalOverlay').classList.add('open');
+
+  // Load all bookings (for date dots) + bookings on current date (for slot availability)
+  await editLoadDates();
+  await editLoadBookingsForDate(editState.date);
+}
+
+function renderEditModal(){
+  const b = editState.booking;
+  document.getElementById('editModalBody').innerHTML = `
+    <div style="background:var(--blue-tint2);border:1.5px solid var(--border-light);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-weight:700;color:var(--blue-dark);">${escHtml(b.subject||'—')}</div>
+      <div style="font-size:.8rem;color:var(--muted);margin-top:3px;">${t('modify.current')}: ${formatDate(b.date)} · <span dir="ltr">${b.start_time}–${b.end_time}</span></div>
+      <div style="font-size:.76rem;color:var(--slate);margin-top:3px;direction:ltr;">${escHtml(b.ref||'')}</div>
+    </div>
+
+    <div id="editFormArea">
+      <div class="edit-section">
+        <div class="edit-section-title">📅 <span>${t('modify.new_date')}</span></div>
+        <div class="edit-cal-nav">
+          <button type="button" class="cal-nav-btn" onclick="editPrevMonth()">&#8250;</button>
+          <div class="month-label" id="editMonthLabel"></div>
+          <button type="button" class="cal-nav-btn" onclick="editNextMonth()">&#8249;</button>
+        </div>
+        <div class="edit-mini-cal" id="editMiniCal"></div>
+      </div>
+
+      <div class="edit-section">
+        <div class="edit-section-title">⏰ <span>${t('modify.new_time')}</span></div>
+        <div class="edit-times">
+          <div>
+            <div class="edit-time-col-label">${t('p1.start_label')}</div>
+            <div class="edit-time-list" id="editStartList"></div>
+          </div>
+          <div>
+            <div class="edit-time-col-label">${t('p1.end_label')}</div>
+            <div class="edit-time-list" id="editEndList"></div>
+          </div>
+        </div>
+        <div id="editDurationBar" style="margin-top:8px;font-size:.82rem;color:var(--blue-dark);font-weight:600;"></div>
+      </div>
+
+      <div class="edit-section">
+        <div class="edit-section-title">🧩 <span>${t('modify.services')}</span></div>
+        <div class="edit-svc-row">
+          <label><input type="checkbox" id="editSvcDrinks" ${editState.services.includes('drinks')?'checked':''} onchange="editToggleSvc('drinks',this.checked)"> ${t('svc.drinks')}</label>
+          <label><input type="checkbox" id="editSvcCatering" ${editState.services.includes('catering')?'checked':''} onchange="editToggleSvc('catering',this.checked)"> ${t('svc.catering')}</label>
+        </div>
+      </div>
+
+      <div class="edit-section">
+        <label class="form-label">${t('modify.notes')}</label>
+        <textarea id="editReason" class="form-textarea" style="min-height:54px;"></textarea>
+      </div>
+    </div>
+
+    <div class="edit-danger-zone">
+      <label><input type="checkbox" id="editCancelChk" onchange="editToggleCancel(this.checked)"> ${t('modify.cancel_instead')}</label>
+    </div>
+
+    <div id="editModalAlert" class="alert alert-danger" style="display:none;margin-top:12px;"></div>
+  `;
+  editRenderCalendar();
+  editRenderStartList();
+  editRenderEndList();
+  editUpdateDurationBar();
+}
+
+async function editLoadDates(){
+  try {
+    const res = await fetch('/api/bookings/all');
+    const all = await res.json();
+    const dates = new Set();
+    all.forEach(x=>{ if(x.room===editState.booking.room) dates.add(x.date); });
+    editState.datesWithBookings = dates;
+    editRenderCalendar();
+  } catch(e){}
+}
+
+async function editLoadBookingsForDate(dateStr){
+  try {
+    const res = await fetch(`/api/bookings?room=${editState.booking.room}&date=${dateStr}`);
+    let rows = await res.json();
+    // Exclude THIS booking from conflict checks (it's the one being edited)
+    rows = rows.filter(r => (r.ref||'') !== (editState.booking.ref||''));
+    editState.bookingsForDate = rows;
+  } catch(e){ editState.bookingsForDate = []; }
+  editRenderStartList();
+  editRenderEndList();
+}
+
+function editPrevMonth(){ editState.calMonth--; if(editState.calMonth<0){editState.calMonth=11;editState.calYear--;} editRenderCalendar(); }
+function editNextMonth(){ editState.calMonth++; if(editState.calMonth>11){editState.calMonth=0;editState.calYear++;} editRenderCalendar(); }
+
+function editRenderCalendar(){
+  const label = document.getElementById('editMonthLabel');
+  if(!label) return;
+  label.textContent = months()[editState.calMonth] + ' ' + (currentLang==='en'?editState.calYear:toAr(editState.calYear));
+  const grid = document.getElementById('editMiniCal');
+  grid.innerHTML='';
+  days().forEach(d=>{ const el=document.createElement('div'); el.className='mc-head'; el.textContent=d; grid.appendChild(el); });
+  const today=new Date(); today.setHours(0,0,0,0);
+  const firstDay=new Date(editState.calYear,editState.calMonth,1).getDay();
+  const daysInMonth=new Date(editState.calYear,editState.calMonth+1,0).getDate();
+  for(let i=0;i<firstDay;i++){ const el=document.createElement('div'); el.className='mc-day empty'; grid.appendChild(el); }
+  for(let d=1;d<=daysInMonth;d++){
+    const date=new Date(editState.calYear,editState.calMonth,d);
+    const dow=date.getDay();
+    const isPast=date<today, isWeekend=dow===5||dow===6;
+    const dateStr=`${editState.calYear}-${pad(editState.calMonth+1)}-${pad(d)}`;
+    const isToday=date.getTime()===today.getTime();
+    const isSelected=dateStr===editState.date;
+    const hasBookings=editState.datesWithBookings.has(dateStr);
+    const el=document.createElement('div');
+    el.className='mc-day';
+    if(isPast||isWeekend) el.classList.add('disabled');
+    if(isToday) el.classList.add('today');
+    if(isSelected) el.classList.add('selected');
+    el.textContent=currentLang==='en'?String(d):toAr(d);
+    if(hasBookings&&!isWeekend){ const dot=document.createElement('div'); dot.className='mc-dot'; el.appendChild(dot); }
+    if(!isPast&&!isWeekend){ el.style.cursor='pointer'; el.addEventListener('click',()=>editSelectDate(dateStr)); }
+    grid.appendChild(el);
+  }
+}
+
+async function editSelectDate(dateStr){
+  editState.date=dateStr;
+  // reset times when switching to a different date
+  editState.startTime=null; editState.endTime=null;
+  editRenderCalendar();
+  await editLoadBookingsForDate(dateStr);
+  editUpdateDurationBar();
+}
+
+function editSlotBooked30(slotTime){
+  const sm=timeToMin(slotTime),em=sm+30,st=minToTime(sm),et=minToTime(em);
+  return editState.bookingsForDate.some(b=>overlap(st,et,b.start_time,b.end_time));
+}
+function editWouldOverlap(startT,endT){
+  return editState.bookingsForDate.some(b=>overlap(startT,endT,b.start_time,b.end_time));
+}
+
+function editRenderStartList(){
+  const list=document.getElementById('editStartList'); if(!list) return;
+  list.innerHTML='';
+  ALL_SLOTS.filter(t2=>timeToMin(t2)<=14*60+30).forEach(t2=>{
+    const booked=editSlotBooked30(t2);
+    const el=document.createElement('div');
+    el.className='edit-slot'+(booked?' booked':'')+(editState.startTime===t2?' selected':'');
+    el.innerHTML=`<span>${t2}</span><span class="es-badge ${booked?'es-booked':'es-avail'}">${booked?t('slot.booked'):t('slot.available')}</span>`;
+    if(!booked) el.addEventListener('click',()=>{ editState.startTime=t2; editState.endTime=null; editRenderStartList(); editRenderEndList(); editUpdateDurationBar(); });
+    list.appendChild(el);
+  });
+}
+
+function editRenderEndList(){
+  const list=document.getElementById('editEndList'); if(!list) return;
+  if(!editState.startTime){ list.innerHTML=`<div style="font-size:.78rem;color:var(--muted);padding:10px;text-align:center;">${t('p1.end_hint')}</div>`; return; }
+  list.innerHTML='';
+  const startMin=timeToMin(editState.startTime), maxEnd=Math.min(startMin+120,15*60);
+  for(let m=startMin+30;m<=maxEnd;m+=30){
+    const t2=minToTime(m), durMins=m-startMin, conflict=editWouldOverlap(editState.startTime,t2);
+    const el=document.createElement('div');
+    el.className='edit-slot'+(conflict?' booked':'')+(editState.endTime===t2?' selected':'');
+    el.innerHTML=`<span>${t2}</span><span class="es-badge ${conflict?'es-booked':'es-avail'}">${conflict?t('slot.booked'):formatDuration(durMins)}</span>`;
+    if(!conflict) el.addEventListener('click',()=>{ editState.endTime=t2; editRenderEndList(); editUpdateDurationBar(); });
+    list.appendChild(el);
+  }
+}
+
+function editUpdateDurationBar(){
+  const bar=document.getElementById('editDurationBar'); if(!bar) return;
+  if(!editState.startTime||!editState.endTime){ bar.textContent=''; return; }
+  const dur=timeToMin(editState.endTime)-timeToMin(editState.startTime);
+  const durLabel=currentLang==='en'?'Duration':'المدة';
+  bar.innerHTML=`${durLabel}: <strong>${formatDuration(dur)}</strong> · <span dir="ltr">${editState.startTime} — ${editState.endTime}</span>`;
+}
+
+function editToggleSvc(key,checked){
+  if(checked){ if(!editState.services.includes(key)) editState.services.push(key); }
+  else { editState.services = editState.services.filter(s=>s!==key); }
+}
+
+function editToggleCancel(checked){
+  editState.cancel = checked;
+  // Grey out the edit form when cancelling
+  const area=document.getElementById('editFormArea');
+  if(area){ area.style.opacity = checked?'0.4':'1'; area.style.pointerEvents = checked?'none':'auto'; }
+  const btn=document.getElementById('editSubmitBtn');
+  btn.textContent = checked ? t('modify.cancel_send') : t('modify.send');
+  btn.classList.toggle('btn-danger', checked);
+  btn.classList.toggle('btn-primary', !checked);
 }
 
 function closeEditModal(){
   document.getElementById('editModalOverlay').classList.remove('open');
   selectedEditBooking = null;
+  editState.booking = null;
 }
 function handleEditOverlayClick(e){ if(e.target===document.getElementById('editModalOverlay')) closeEditModal(); }
 
@@ -1110,33 +1364,32 @@ async function submitEditRequest(){
   if(!selectedEditBooking) return;
   const btn = document.getElementById('editSubmitBtn');
   const alertEl = document.getElementById('editModalAlert');
-  const mins = Number(document.getElementById('editExtraMins').value || 0);
-  const servicesArr = [];
-  if(document.getElementById('editSvcDrinks').checked) servicesArr.push('drinks');
-  if(document.getElementById('editSvcCatering').checked) servicesArr.push('catering');
-  const reason = document.getElementById('editReason').value.trim();
+  const reason = (document.getElementById('editReason')||{}).value || '';
+  const showErr = (msg)=>{ if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${msg}</span>`; } };
+  if(alertEl) alertEl.style.display='none';
 
-  if(alertEl) alertEl.style.display = 'none';
-  // Must request at least one change (extra time or a service)
-  if(!mins && servicesArr.length === 0){
-    if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${t('modify.no_change')}</span>`; }
-    return;
+  let payload;
+  if(editState.cancel){
+    payload = { booking_id:selectedEditBooking.id, requester_name:selectedEditBooking.name, cancel:true, reason:reason.trim()||null };
+  } else {
+    if(!editState.date){ showErr(t('err.date')); return; }
+    if(!editState.startTime){ showErr(t('err.start')); return; }
+    if(!editState.endTime){ showErr(t('err.end')); return; }
+    payload = {
+      booking_id:selectedEditBooking.id, requester_name:selectedEditBooking.name,
+      new_date:editState.date, new_start:editState.startTime, new_end:editState.endTime,
+      services:editState.services, reason:reason.trim()||null,
+    };
   }
 
-  btn.disabled = true; btn.textContent = t('modify.sending');
+  btn.disabled=true; btn.textContent=t('modify.sending');
   try {
-    const res = await fetch('/api/modify-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      booking_id: selectedEditBooking.id,
-      requester_name: selectedEditBooking.name,
-      additional_minutes: mins || 0,
-      added_services: servicesArr,
-      reason: reason || null
-    })});
+    const res = await fetch('/api/modify-requests',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const data = await res.json();
     if(res.ok && data.success){ closeEditModal(); alert(t('modify.sent')); }
-    else if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${data.error || t('err.server')}</span>`; }
-  } catch(e){ if(alertEl){ alertEl.style.display='flex'; alertEl.innerHTML=`<span>⚠️</span><span>${t('err.server')}</span>`; } }
-  btn.disabled = false; btn.textContent = t('modify.send');
+    else { showErr(data.error || t('err.server')); }
+  } catch(e){ showErr(t('err.server')); }
+  btn.disabled=false; btn.textContent = editState.cancel ? t('modify.cancel_send') : t('modify.send');
 }
 
 async function submitCancelRequest(){

@@ -28,9 +28,11 @@ body {
   font-weight: 400;
   background: var(--bg);
   color: var(--blue-deep);
-  direction: rtl;
+  /* direction follows <html dir> — RTL for Arabic, LTR for English */
   min-height: 100vh;
 }
+html[dir="ltr"], html[lang="en"] { direction: ltr; }
+html[dir="rtl"], html[lang="ar"] { direction: rtl; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: 'Cairo', sans-serif; cursor: pointer; border: none; outline: none; touch-action: manipulation; }
@@ -374,11 +376,14 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   align-items: center;
   justify-content: center;
   border-radius: 8px;
+  /* Visible contrast/gridlines between days */
+  border: 1.5px solid var(--border-light, #d7e3f2);
+  background: #fff;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   touch-action: manipulation;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   position: relative;
   padding: 4px;
   gap: 2px;
@@ -386,7 +391,11 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
 
 .cal-day:hover:not(.disabled):not(.empty) {
   background: var(--blue-tint);
+  border-color: var(--blue-mid, #1d5fa8);
 }
+
+/* Empty filler cells: no border so the month grid edge stays clean */
+.cal-day.empty { border-color: transparent; background: transparent; }
 
 .cal-day.today {
   background: var(--blue-tint);
