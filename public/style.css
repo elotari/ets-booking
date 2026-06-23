@@ -133,8 +133,9 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   content: '';
   position: absolute;
   top: 18px;
-  right: 50%;
-  left: -50%;
+  /* logical offsets so the connector spans correctly in both RTL and LTR */
+  inset-inline-start: 50%;
+  inset-inline-end: -50%;
   height: 2px;
   background: var(--border);
   z-index: 0;

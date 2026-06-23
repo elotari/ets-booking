@@ -50,13 +50,17 @@
     }
     .landing-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(29,95,168,.6); }
     .landing-lang-btn {
-      position: fixed; top: 20px; inset-inline-start: 20px;
-      background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.38);
-      color: #fff; border-radius: 24px; padding: 11px 30px;
-      font-size: 1rem; font-weight: 700; cursor: pointer; letter-spacing: 1.5px;
-      transition: background .2s; font-family: inherit;
+      position: absolute; top: 16px; inset-inline-end: 16px;
+      background: var(--accent,#e8a000); border: none;
+      color: #0f2a4a; border-radius: 22px; padding: 9px 22px;
+      font-size: 0.92rem; font-weight: 800; cursor: pointer; letter-spacing: 1px;
+      transition: background .2s; font-family: inherit; z-index: 5;
+      box-shadow: 0 3px 12px rgba(0,0,0,.22);
     }
-    .landing-lang-btn:hover { background: rgba(255,255,255,.26); }
+    .landing-lang-btn:hover { background: #f2af1f; }
+    @media (max-width: 480px) {
+      .landing-lang-btn { top: 12px; inset-inline-end: 12px; padding: 8px 18px; font-size: 0.86rem; }
+    }
 
     /* ── Landing prototype + suggestions box ── */
     .landing-feedback {
