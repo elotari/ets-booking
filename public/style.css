@@ -1097,13 +1097,14 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   position: fixed;
   inset: 0;
   background: rgba(15, 42, 74, 0.55);
-  z-index: 200;
+  z-index: 10000; /* above landing page (9999) so it shows from the home screen */
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s;
+  padding: 16px;
 }
 
 .cancel-modal-overlay.open {
@@ -1116,12 +1117,20 @@ input, select, textarea { font-family: 'Cairo', sans-serif; }
   border-radius: 16px;
   width: 100%;
   max-width: 480px;
-  margin: 16px;
+  /* keep the modal within the viewport; body scrolls so the footer
+     (confirm button) is always reachable — desktop and mobile */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 8px 40px rgba(15, 42, 74, 0.25);
   overflow: hidden;
   transform: scale(0.96);
   transition: transform 0.22s;
 }
+
+/* head and foot stay fixed; only the body scrolls */
+.cancel-modal-head, .cancel-modal-foot { flex-shrink: 0; }
+.cancel-modal-body { overflow-y: auto; flex: 1 1 auto; }
 
 .cancel-modal-overlay.open .cancel-modal {
   transform: scale(1);

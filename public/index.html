@@ -101,8 +101,8 @@
     }
 
     /* ── Wide edit modal (full modify with calendar) ── */
-    .edit-modal-wide { max-width: 620px; width: 96vw; }
-    .edit-section { margin-bottom: 18px; }
+    .edit-modal-wide { max-width: 560px; width: 96vw; }
+    .edit-section { margin-bottom: 14px; }
     .edit-section-title {
       font-size: 0.9rem; font-weight: 800; color: var(--blue-dark,#0f2a4a);
       margin: 0 0 10px; display: flex; align-items: center; gap: 8px;
@@ -111,7 +111,7 @@
     .edit-mini-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .edit-mini-cal .mc-head { text-align: center; font-size: 0.66rem; font-weight: 700; color: var(--slate,#64748b); padding: 2px 0; }
     .edit-mini-cal .mc-day {
-      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      min-height: 34px; display: flex; align-items: center; justify-content: center;
       border: 1.5px solid var(--border-light,#d7e3f2); background: #fff; border-radius: 6px;
       font-size: 0.78rem; font-weight: 600; cursor: pointer; position: relative;
       transition: background .12s, border-color .12s;
@@ -124,7 +124,12 @@
     .edit-mini-cal .mc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent,#e8a000); position: absolute; bottom: 3px; }
     .edit-times { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .edit-time-col-label { font-size: 0.78rem; font-weight: 700; color: var(--slate,#64748b); margin-bottom: 6px; }
-    .edit-time-list { max-height: 168px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-inline-end: 4px; }
+    .edit-time-list { max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-inline-end: 4px; }
+    @media (max-width: 480px) {
+      .edit-mini-cal .mc-day { min-height: 30px; font-size: 0.72rem; }
+      .edit-time-list { max-height: 130px; }
+      .edit-section { margin-bottom: 11px; }
+    }
     .edit-slot {
       display: flex; align-items: center; justify-content: space-between;
       padding: 7px 10px; border: 1.5px solid var(--border-light,#d7e3f2); border-radius: 7px;
